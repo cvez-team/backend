@@ -4,8 +4,16 @@ swagger_config = {
     "docs_url": "/",
     "openapi_tags": [
         {
-            "name": "uploads",
-            "description": "Operations with uploads data"
+            "name": "new",
+            "description": "Operations with create new data"
+        },
+        {
+            "name": "match",
+            "description": "Operations with match data"
+        },
+        {
+            "name": "get",
+            "description": "Operations with get data"
         }
     ]
 }

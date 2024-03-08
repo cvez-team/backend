@@ -1,15 +1,15 @@
 from ..configs.firebase_config import db
 
 
-class FirebaseProvider:
+class DatabaseProvider:
     '''
-    FirebaseProvider is a class that provides a connection 
-    to the Firebase Firestore database.
+    DatabaseProvider is a class that provides a connection 
+    to the Database provider.
     '''
 
     def __init__(self, collection_name: str):
         self.collection_name = collection_name
-        self.id_field = "id"
+        self.id_field = "_id"
         # Initialize collection
         self.collection = db.collection(collection_name)
 
@@ -41,12 +41,12 @@ class FirebaseProvider:
         else:
             return None
 
-    def queryEqual(self, field: str, value: str):
+    def queryEqual(self, key: str, value: str):
         '''
-        Query the collection for documents where the field is equal to the value.
+        Query the collection for documents where the key is equal to the value.
         Return a list of documents.
         '''
-        docs = self.collection.where(field, "==", value).stream()
+        docs = self.collection.where(key, "==", value).stream()
         doc_list = []
         for doc in docs:
             doc_dict = doc.to_dict()
@@ -55,7 +55,7 @@ class FirebaseProvider:
             doc_list.append(doc_dict)
         return doc_list
 
-    def create(self, data: dict):
+    def create(self, data: dict) -> str:
         '''
         Create a new document in the collection.
         Return the document id.

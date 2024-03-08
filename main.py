@@ -1,7 +1,7 @@
 import os
 import uvicorn
 from apps.utils.create_app import create_app
-from apps.routes.uploads_route import router as uploads_router
+from apps.routes.new import router as uploads_router
 
 # Create FastAPI app instance
 app = create_app()
