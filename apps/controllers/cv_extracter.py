@@ -1,6 +1,5 @@
 from langchain.document_loaders import Docx2txtLoader, PyPDFLoader
 import os
-import io
 
 def load_pdf_docx(file_path):
     if os.path.basename(file_path).endswith(".pdf") or os.path.basename(file_path).endswith(".PDF"):
