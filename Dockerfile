@@ -1,4 +1,4 @@
-FROM python:3.11.8-slim-bookworm
+FROM python:3.10.13-slim-bookworm
 
 # Define working directory
 WORKDIR /app
@@ -15,5 +15,8 @@ RUN python -m spacy download en_core_web_sm
 # Copy the rest of the files
 COPY . /app
 
+# Expose the port
+EXPOSE 7860
+
 # Run the application
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
