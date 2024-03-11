@@ -14,7 +14,7 @@ WORKDIR $CLOUD_HOME/app
 USER user
 
 # Copy the requirements file
-COPY --chown=user:user requirements.txt /app
+COPY --chown=user:user requirements.txt $CLOUD_HOME/app
 
 # Install the requirements
 RUN pip install -r requirements.txt
@@ -23,7 +23,7 @@ RUN pip install -r requirements.txt
 RUN python -m spacy download en_core_web_sm
 
 # Copy the rest of the files
-COPY --chown=user:user . /app
+COPY --chown=user:user . $CLOUD_HOME/app
 
 # Expose the port
 EXPOSE 7860/tcp
