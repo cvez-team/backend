@@ -16,8 +16,17 @@ async def create_cv(
     data: CVUploadsModel.files = CVUploadsModel.files_default,
     user: UserModel = Depends(get_current_user)
 ):
+    cv_datas = []
+    for _data in data:
+        # Read data bytes
+        file_data = await _data.read()
+        file_name = _data.filename
+        # Process the file
+        cv_data = cv_control(
+            file=file_data, filename=file_name, user_id=user["id"])
+        cv_datas.append(cv_data)
 
-    return jsonResponseFmt(user.model_dump())
+    return jsonResponseFmt(cv_datas)
 
 
 # Route for create new JD

@@ -130,4 +130,5 @@ cython_debug/
 
 # Custom files, folders
 keys/
+cache/*
 __cache__.json
