@@ -23,8 +23,3 @@ def get_cv(file_name):
         _context += '\n'.join(non_empty_lines) + "\n"
 
     return _context.strip()
-
-cv_content = get_cv("10724818.pdf")
-
-
-print(cv_content)
