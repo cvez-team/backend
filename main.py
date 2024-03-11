@@ -2,7 +2,11 @@ import os
 import uvicorn
 from apps.utils.create_app import create_app
 from apps.routes.new import router as uploads_router
+from dotenv import load_dotenv
 
+
+# Load environment variables from the `.env` file
+load_dotenv()
 # Create FastAPI app instance
 app = create_app()
 

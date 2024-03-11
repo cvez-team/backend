@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from ..models.news_model import CVUploadsModel, JDModel, QuestionModel
 from ..models.user_model import UserModel
 from ..controllers.cv_controller import cv_control
+from ..controllers.jd_controller import jd_control
 from ..middlewares.auth_middleware import get_current_user
 from ..utils.response_fmt import jsonResponseFmt
 
@@ -23,6 +24,8 @@ async def create_cv(
 @router.post("/jd")
 async def create_jd(jd: JDModel):
 
+    jd = jd_control(jd.title,jd.content,"cvez")
+    
     return jsonResponseFmt(jd.model_dump())
 
 
