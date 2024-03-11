@@ -30,7 +30,7 @@ def jd_control(title: str, content: str, user_id: str) -> Dict[str, Any]:
     }
 
     # Upload the extraction to the database
-    # data_id = database.create(data=cv_data)
+    # data_id = database.create(data=jd_data)
     
     # Upload vector to the database
     payload = {
