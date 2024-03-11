@@ -27,4 +27,4 @@ db = firestore.client(app)
 
 # Initialize Storage client
 bucket = storage.bucket(
-    name=f"gs:/{os.environ.get('FIREBASE_PROJECT_ID')}.appspot.com", app=app)
+    name=f"{os.environ.get('FIREBASE_PROJECT_ID')}.appspot.com", app=app)
