@@ -2,7 +2,7 @@ import numpy as np
 import numpy.typing as npt
 # Import embedder
 from .spacy import embedder as spacy_embedder
-# from .gemini import embedder as spacy_embedder
+# from .gemini import embedder as gemini_embedder
 
 
 class WordEmbedding:
