@@ -7,19 +7,17 @@ from ..utils.mock import default_fmt
 
 # Define the database and vector database provider
 database = DatabaseProvider(collection_name="Questions")
-vector_database = VectorDatabaseProvider(size=96)
+vector_database = VectorDatabaseProvider(size=1536)
 
 def question_control(content: List[str]) -> Dict[str, Any]:
     '''
     question_control is a function that controls the creation of a new question.
     
     Args:
-    - title (str): Title of the question.
-    - content (str): Content of the question.
-    - answer (str): Answer of the question.
+    - content (List[str]): The content of the questions.
     
     Returns:
-    - question_data (dict): A dictionary containing the extraction of the question.
+    - question_data (dict): A dictionary containing the keywords extracted from the content.
     '''
     # Retrieve the raw text
     raw_text = "\n".join(content)
@@ -36,7 +34,7 @@ def question_control(content: List[str]) -> Dict[str, Any]:
     question_data = {
         "question_data": extraction,
     }
-
+    
     # Upload the extraction to the database
     # question_id = database.create(data=question_data)
     

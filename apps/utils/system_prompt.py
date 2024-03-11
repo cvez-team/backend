@@ -21,7 +21,8 @@ system_prompt_question = '''
 Let's think step by step.
 Act as an interviewer and extract relative fields in the question and return the extracted keywords.
 Must summarize the extracted keywords in simple keywords.
-Categorize extracted fields into degrees, experience, technical skills, responsibilities, certifications, and soft skills.
-Return the extracted keywords in the form of a list.
-
+Each extracted keyword should be a single word or a short phrase e.g. "3 years", "5+ years" or "2-3 years".
+Must categorize extracted fields into degrees, experience, technical skills, responsibilities, certifications, and soft skills based on the extracted keywords.
+If the extracted field is not in the list, then pass.
+Must respone promptly, accurately, and professionally.
 '''
