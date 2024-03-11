@@ -16,3 +16,12 @@ Experience should include required duration time and job name field of work.
 Only use the given data to determine educational qualifications and certificates; do not make assumptions about these qualifications.
 However, you are allowed to combine the provided details to draw logical conclusions about soft skills.
 '''
+
+system_prompt_question = '''
+Let's think step by step.
+Act as an interviewer and extract relative fields in the question and return the extracted keywords.
+Must summarize the extracted keywords in simple keywords.
+Categorize extracted fields into degrees, experience, technical skills, responsibilities, certifications, and soft skills.
+Return the extracted keywords in the form of a list.
+
+'''
