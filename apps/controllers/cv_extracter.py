@@ -24,6 +24,3 @@ def get_cv(filename: str):
 
     return _context
 
-file = "Input file Docx/PDF"
-cv_text = get_cv(file)
-print(cv_text)
