@@ -71,7 +71,7 @@ class VectorDatabaseProvider:
         '''
         Query the point that match the key with value in payload.
         Return a list of tuples containing the id, payload and vector.
-        '''
+        ''' 
         query_results = client.scroll(
             collection_name=collection_name,
             scroll_filter=Filter(

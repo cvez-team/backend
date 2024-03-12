@@ -1,6 +1,6 @@
 default_fmt = {
     "Degree": {
-        "type": "string",
+        "type": "list",
         "description": "Degree of the candidate. e.g. B.Tech, M.Tech, B.Sc, M.Sc"
     },
     "Experience": {

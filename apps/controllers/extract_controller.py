@@ -23,7 +23,7 @@ def extract_control(system_prompt: str, prompt: str, fmt: LLMFmt) -> _ExtractCon
 
     # Extract the data by invoking the model
     extraction = generator.generate(system=system_prompt, prompt=prompt)
-
+    
     # Generate word embeddings
     word_embeddings = {}
     for key, value in extraction.items():
