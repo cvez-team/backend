@@ -2,6 +2,8 @@ import os
 import uvicorn
 from apps.utils.create_app import create_app
 from apps.routes.new import router as uploads_router
+from apps.routes.match import router as match_router
+from apps.routes.get import router as get_router
 from dotenv import load_dotenv
 
 
@@ -13,6 +15,8 @@ app = create_app()
 
 # Add routes
 app.include_router(uploads_router, prefix="/api")
+app.include_router(match_router, prefix="/api")
+app.include_router(get_router, prefix="/api")
 
 
 # Launch FastAPI app
