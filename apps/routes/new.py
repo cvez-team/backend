@@ -33,7 +33,7 @@ async def create_cv(
 @router.post("/jd")
 async def create_jd(jd: JDModel):
 
-    jd_data = jd_control(jd.title,jd.content,"cvez")
+    jd_data = jd_control(jd.content)
     
     return jsonResponseFmt(jd_data)
 

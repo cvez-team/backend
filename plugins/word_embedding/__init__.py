@@ -3,6 +3,7 @@ import numpy.typing as npt
 # Import embedder
 from .spacy import embedder as spacy_embedder
 from .openai import embedder as openai_embedder
+from .gemini import embedder as gemini_embedder
 # from .gemini import embedder as gemini_embedder
 
 
@@ -12,7 +13,7 @@ class WordEmbedding:
     '''
 
     def __init__(self, dtype: npt.DTypeLike = np.float32):
-        self.embedder = openai_embedder
+        self.embedder = gemini_embedder
         self.dtype = dtype
 
     def embed(self, data: str) -> npt.NDArray:

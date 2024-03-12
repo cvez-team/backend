@@ -9,7 +9,7 @@ class CVUploadsModel:
 
 
 class JDModel(BaseModel):
-    title: str = Field(..., description="The title of the job description")
+    # title: str = Field(..., description="The title of the job description")
     content: str = Field(..., description="The content of the job description")
 
 
