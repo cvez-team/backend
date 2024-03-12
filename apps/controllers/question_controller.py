@@ -4,6 +4,7 @@ from ..providers.db_provider import DatabaseProvider
 from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..utils.system_prompt import system_prompt_question
 from ..utils.mock import default_fmt, question_fmt
+from ..models.question_model import QuestionModel
 import re
 
 # Define the database and vector database provider
@@ -33,9 +34,12 @@ def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
         system_prompt=system_prompt_question, prompt=raw_text, fmt=criteria
     )
     # Create a dictionary for the question data
-    question_data = {
-        "extraction": extraction
-    }
+    question_data = QuestionModel(
+        title=title,
+        content=content,
+        answer=answer,
+        extraction=extraction
+    ).to_dict()
     
     # Upload the extraction to the database
     question_id = database.create(data=question_data)

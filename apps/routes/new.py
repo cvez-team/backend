@@ -40,5 +40,5 @@ async def create_jd(jd: JDModel):
 @router.post("/question")
 async def create_question(question: QuestionModel):
     question = question_control(
-        content=question.content)
+        title=question.title, content=question.content, answer=question.answer)
     return jsonResponseFmt(data=question)
