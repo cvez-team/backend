@@ -22,18 +22,5 @@ default_fmt = {
     "SoftSkills": {
         "type": "list",
         "description": "List of soft skills of the candidate."
-    }
+    },
 }
-
-question_fmt = {
-        "type": "list",
-        "description": "Category of the keywords. e.g. Problem-solving, Leadership, Networking, etc.",
-        "items": {
-            "type": "string",
-            "description": "Keywords extracted from the question."
-            }
-        }
-
-    
-    
-            
