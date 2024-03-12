@@ -33,9 +33,9 @@ async def create_cv(
 @router.post("/jd")
 async def create_jd(jd: JDModel):
 
-    jd = jd_control(jd.title,jd.content,"cvez")
+    jd_data = jd_control(jd.title,jd.content,"cvez")
     
-    return jsonResponseFmt(jd.model_dump())
+    return jsonResponseFmt(jd_data)
 
 
 # Route for create new question

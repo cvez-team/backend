@@ -7,7 +7,7 @@ from ..utils.mock import default_fmt
 
 # Define the database and vector database provider
 database = DatabaseProvider(collection_name="JD")
-vector_database = VectorDatabaseProvider(size=96)
+vector_database = VectorDatabaseProvider(size=1536)
 
 def jd_control(title: str, content: str, user_id: str) -> Dict[str, Any]:
     '''
