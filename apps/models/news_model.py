@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Dict
 from fastapi import UploadFile, File
 
 
@@ -14,6 +14,6 @@ class JDModel(BaseModel):
 
 
 class QuestionModel(BaseModel):
-    # title: str = Field(..., description="The title of the question")
-    content: List[str] = Field(..., description="The content of the question")
-    # answer: str = Field(..., description="The answer of the question")
+    title: str = Field(..., description="The title of the question")
+    content: str = Field(..., description="The content of the question")
+    answer: str = Field(..., description="The answer of the question")

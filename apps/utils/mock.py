@@ -22,20 +22,18 @@ default_fmt = {
     "SoftSkills": {
         "type": "list",
         "description": "List of soft skills of the candidate."
-    },
+    }
 }
 
-# question_fmt = {
-#     "question_title": {
-#         "type": "string",
-#         "description": "Title of the question."
-#     },
-#     "question_content": {
-#         "type": "string",
-#         "description": "Content of the question."
-#     },
-#     "question_answer": {
-#         "type": "string",
-#         "description": "Answer of the question."
-#     }
-# }
+question_fmt = {
+        "type": "list",
+        "description": "Category of the keywords. e.g. Problem-solving, Leadership, Networking, etc.",
+        "items": {
+            "type": "string",
+            "description": "Keywords extracted from the question."
+            }
+        }
+
+    
+    
+            
