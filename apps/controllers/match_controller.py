@@ -1,8 +1,10 @@
-from typing import Dict, List, Tuple, Any, Union
+from typing import Dict, List, Tuple
 import numpy.typing as npt
 from ..providers.vectordb_provider import VectorDatabaseProvider
+from ..utils.constants import WORD_EMBEDDING_DIM
 
-vector_database = VectorDatabaseProvider(size=768)
+vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
+
 
 def calculate_average_scores(vectors: List[Tuple[str, float]]) -> Dict[str, float]:
     # Tạo một từ điển để lưu trữ trung bình cộng theo ID
@@ -18,7 +20,7 @@ def calculate_average_scores(vectors: List[Tuple[str, float]]) -> Dict[str, floa
             else:
                 # Nếu ID đã tồn tại, thêm score vào list tương ứng
                 average_scores[id_].append(score)
-    
+
     # Tạo từ điển mới chứa trung bình cộng của mỗi ID
     average_scores_result = {}
     for id_, scores in average_scores.items():
@@ -26,14 +28,15 @@ def calculate_average_scores(vectors: List[Tuple[str, float]]) -> Dict[str, floa
         average_score = sum(scores) / len(scores)
         # Lưu trung bình cộng vào từ điển kết quả
         average_scores_result[id_] = average_score
-    
+
     return average_scores_result
 
+
 def match_controller(collection_name: str, query_vector: npt.NDArray, limit: int = 10) -> List[Tuple[str, float]]:
-    match_result =  vector_database.search(collection_name, query_vector, limit)
-    
+    match_result = vector_database.search(collection_name, query_vector, limit)
+
     # Chuyển đổi match_result thành một list các tuples
     match_tuples = [(item[0], item[1]) for item in match_result]
-    
+
     # Gọi hàm calculate_average_scores với kết quả tìm kiếm và trả về kết quả
     return calculate_average_scores(match_tuples)
