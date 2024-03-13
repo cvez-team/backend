@@ -4,7 +4,6 @@ from plugins.typing import LLMFmt
 from ..providers.vectordb_provider import VectorDatabaseProvider
 from .query_controller import query_control
 from ..utils.constants import WORD_EMBEDDING_DIM
-from ..utils.mock import default_fmt
 
 vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
 
@@ -13,8 +12,6 @@ def calculate_average_scores(scores: Dict[str, List[List[Tuple[str, float]]]], f
     average_scores = {}
     _average_scores = {}
     _average_scores_count = {}
-
-    print(scores)
 
     for key, values in scores.items():
         for value in values:
@@ -41,12 +38,14 @@ def calculate_average_scores(scores: Dict[str, List[List[Tuple[str, float]]]], f
     if len(average_scores) == 0:
         return average_scores
 
+    # Get the deviation of the scores
+    deviation = 0
+    for key, _fmt in fmt.items():
+        deviation += _fmt["weight"]
+
     # Normalize the scores
-    max_score = max(average_scores.values())
-    min_score = min(average_scores.values())
     for _id in average_scores:
-        average_scores[_id] = (
-            average_scores[_id] - min_score) / (max_score - min_score)
+        average_scores[_id] = average_scores[_id] / deviation
 
     return average_scores
 
@@ -61,7 +60,7 @@ def find_match(collection_name: str, query_vector: npt.NDArray, limit: int = 100
         return []
 
 
-def match_cv_control(jd_id: str, user_id: str, fmt: LLMFmt = default_fmt):
+def match_cv_control(jd_id: str, user_id: str, fmt: LLMFmt):
     # Query point that contains the JD ID
     vectors = query_control(tag="jd", user_id=user_id,
                             firebase_id=jd_id, fmt=fmt)
@@ -82,7 +81,7 @@ def match_cv_control(jd_id: str, user_id: str, fmt: LLMFmt = default_fmt):
     return calculate_average_scores(match_results, fmt)
 
 
-def match_question_control(cv_id: str, user_id: str, fmt: LLMFmt = default_fmt):
+def match_question_control(cv_id: str, user_id: str, fmt: LLMFmt):
     # Query point that contains the JD ID
     vectors = query_control(tag="cv", user_id=user_id,
                             firebase_id=cv_id, fmt=fmt)

@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Union
 import numpy.typing as npt
 import uuid
 from qdrant_client.http.models import VectorParams, Distance, PointStruct, Filter, FieldCondition, MatchValue, PointIdsList
@@ -13,9 +13,9 @@ class VectorDatabaseProvider:
     def __init__(self, size: int, distance: Distance = Distance.COSINE) -> None:
         self.size = size
         self.distance = distance
-        self.available_collections = self.__get_collection()
+        self.available_collections = self.get_collections()
 
-    def __get_collection(self):
+    def get_collections(self):
         '''
         Get all available collections.
         '''
@@ -116,13 +116,18 @@ class VectorDatabaseProvider:
         )
         return id
 
-    def delete(self, collection_name: str, id: str):
+    def delete(self, collection_name: str, id: Union[str, List[str]]):
         '''
         Delete data from the collection by id.
         '''
+        if isinstance(id, list):
+            point_ids = id
+        else:
+            point_ids = [id]
+
         client.delete(
             collection_name=collection_name,
             points_selector=PointIdsList(
-                points=[id]
+                points=point_ids
             )
         )

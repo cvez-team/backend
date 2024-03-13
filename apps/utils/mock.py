@@ -1,9 +1,4 @@
 default_fmt = {
-    "Degree": {
-        "type": "list",
-        "description": "Degree of the candidate. e.g. B.Tech, M.Tech, B.Sc, M.Sc",
-        "weight": 1.0
-    },
     "Experience": {
         "type": "list",
         "description": "Experience of the candidate in years.",
@@ -12,12 +7,7 @@ default_fmt = {
     "TechnicalSkills": {
         "type": "list",
         "description": "List of technical skills of the candidate.",
-        "weight": 1.0
-    },
-    "Responsibilities": {
-        "type": "list",
-        "description": "List of responsibilities of the candidate.",
-        "weight": 1.0
+        "weight": 2.0
     },
     "Certifications": {
         "type": "list",
