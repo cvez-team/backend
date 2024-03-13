@@ -1,15 +1,16 @@
 from typing import Any, Dict
+import re
 from .extract_controller import extract_control
 from ..models.jd_model import JDModel
 from ..providers.db_provider import DatabaseProvider
 from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..utils.system_prompt import system_prompt_jd
+from ..utils.constants import JD_COLLECTION, WORD_EMBEDDING_DIM
 from ..utils.mock import default_fmt
-import re
 
 # Define the database and vector database provider
-database = DatabaseProvider(collection_name="JD")
-vector_database = VectorDatabaseProvider(size=96)
+database = DatabaseProvider(collection_name=JD_COLLECTION)
+vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
 
 
 def jd_control(title: str, content: str, user_id: str) -> Dict[str, Any]:

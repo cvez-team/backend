@@ -1,5 +1,5 @@
-from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 import os
+from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 
 
 def load_pdf_docx(file_path):
@@ -8,7 +8,7 @@ def load_pdf_docx(file_path):
     elif os.path.basename(file_path).endswith(".docx") or os.path.basename(file_path).endswith(".DOCX"):
         loader = Docx2txtLoader(file_path)
     else:
-        raise ValueError("Not the PDF or DOCX file ")
+        raise ValueError("File must be the PDF or DOCX file.")
 
     documents = loader.load_and_split()
 
