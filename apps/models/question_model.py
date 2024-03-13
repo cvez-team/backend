@@ -10,12 +10,12 @@ class QuestionModel:
         self,
         title: str,
         content: str,
-        answers: str,
+        answer: str,
         extraction: Dict[str, Any]
     ):
         self.title = title
         self.content = content
-        self.answers = answers
+        self.answer = answer
         self.extraction = extraction
 
     def to_dict(self) -> Dict[str, Any]:
@@ -25,6 +25,6 @@ class QuestionModel:
         return {
             "title": self.title,
             "content": self.content,
-            "answers": self.answers,
+            "answer": self.answer,
             "extraction": self.extraction
         }
