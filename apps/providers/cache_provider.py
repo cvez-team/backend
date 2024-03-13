@@ -54,3 +54,8 @@ class CacheProvider:
         with open(cache_file_path, "wb") as f:
             f.write(file)
         return cache_file_path
+
+    def remove_cache_file(self, filename: str):
+        # Remove file from cache
+        cache_file_path = os.path.join(self.cache_dir, filename)
+        os.remove(cache_file_path)

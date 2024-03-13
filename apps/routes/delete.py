@@ -17,11 +17,13 @@ async def delete_cv_by_id(cv_id: str):
     cv = delete_cv_by_id_control(cv_id)
     return jsonResponseFmt(cv)
 
+
 # Define route for delete JD by id
 @router.delete("/jd/{jd_id}")
 async def get_jd_by_id(jd_id: str):
     jd = delete_jd_by_id_control(jd_id)
     return jsonResponseFmt(jd)
+
 
 # Define route for delete question by id
 @router.delete("/question/{question_id}")

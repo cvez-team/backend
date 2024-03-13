@@ -1,8 +1,9 @@
 from typing import Dict
 import numpy.typing as npt
+from plugins.typing import LLMFmt
 from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..utils.constants import WORD_EMBEDDING_DIM
-from plugins.typing import LLMFmt
+
 
 vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
 
