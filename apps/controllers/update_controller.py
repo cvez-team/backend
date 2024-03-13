@@ -6,7 +6,6 @@ jd_database = DatabaseProvider(collection_name=JD_COLLECTION)
 question_database = DatabaseProvider(collection_name=QUESTION_COLLECTION)
 
 
-
 def update_cv_content_control(cv_id: str, new_content: str):
     return cv_database.update(cv_id, new_content)
 

@@ -1,5 +1,6 @@
 from typing import Any, Dict
 import re
+from plugins.typing import LLMFmt
 from .extract_controller import extract_control
 from ..models.jd_model import JDModel
 from ..providers.db_provider import DatabaseProvider
@@ -13,19 +14,16 @@ database = DatabaseProvider(collection_name=JD_COLLECTION)
 vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
 
 
-def jd_control(title: str, content: str, user_id: str) -> Dict[str, Any]:
+def jd_control(title: str, content: str, user_id: str, fmt: LLMFmt) -> Dict[str, Any]:
     '''
     Extract the data from the JD file, and upload to the database.
     '''
     raw_text = "\n".join(content)
     raw_text = re.sub(r"[^a-zA-z0-9\s]", "", raw_text)
 
-    # Fetch extract criterias
-    criteria = default_fmt
-
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(
-        system_prompt=system_prompt_jd, prompt=raw_text, fmt=criteria
+        system_prompt=system_prompt_jd, prompt=raw_text, fmt=fmt
     )
 
     # Format data to upload

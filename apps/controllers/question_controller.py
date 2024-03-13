@@ -1,5 +1,6 @@
 from typing import Any, Dict
 import re
+from plugins.typing import LLMFmt
 from .extract_controller import extract_control
 from ..models.question_model import QuestionModel
 from ..providers.db_provider import DatabaseProvider
@@ -13,7 +14,7 @@ database = DatabaseProvider(collection_name=QUESTION_COLLECTION)
 vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
 
 
-def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
+def question_control(title: str, content: str, answer: str, user_id: str, fmt: LLMFmt) -> Dict[str, Any]:
     '''
     question_control is a function that controls the creation of a new question.
 
@@ -30,12 +31,9 @@ def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
     # Remove invalid characters from the raw text (only allow alphanumeric characters and spaces)
     raw_text = re.sub(r"[^a-zA-Z0-9\s]", "", raw_text)
 
-    # Fetch extract criterias
-    criteria = default_fmt
-
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(
-        system_prompt=system_prompt_question, prompt=raw_text, fmt=criteria
+        system_prompt=system_prompt_question, prompt=raw_text, fmt=fmt
     )
     # Create a dictionary for the question data
     question_data = QuestionModel(
@@ -55,7 +53,7 @@ def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
 
     for key, value in word_embeddings.items():
         # Get collection name
-        collection_name = f"question_{key}_cvez"
+        collection_name = f"question_{key}_{user_id}"
         # If value is a list
         if isinstance(value, list):
             for item in value:

@@ -1,4 +1,5 @@
 from typing import Any, Dict
+from plugins.typing import LLMFmt
 from .extract_controller import extract_control
 from .cv_extracter import get_cv
 from ..models.cv_model import CVModel
@@ -22,7 +23,7 @@ storage = StorageProvider(directory=CV_STORAGE)
 cacher = CacheProvider()
 
 
-def cv_control(file: bytes, filename: str, user_id: str) -> Dict[str, Any]:
+def cv_control(file: bytes, filename: str, user_id: str, fmt: LLMFmt) -> Dict[str, Any]:
     '''
     Extract the data from the CV file, and upload to the database.
     '''
@@ -38,12 +39,9 @@ def cv_control(file: bytes, filename: str, user_id: str) -> Dict[str, Any]:
 
     raw_text = get_cv(cache_file_path)
 
-    # Fetch extract criterias
-    criteria = default_fmt
-
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(
-        system_prompt=system_prompt_cv, prompt=raw_text, fmt=criteria
+        system_prompt=system_prompt_cv, prompt=raw_text, fmt=fmt
     )
 
     # Format data to upload
@@ -68,7 +66,7 @@ def cv_control(file: bytes, filename: str, user_id: str) -> Dict[str, Any]:
 
     # Upload vector to the database
     payload = {
-        "id": "test_id",
+        "id": data_id,
     }
     for key, value in word_embeddings.items():
         # Get collection name

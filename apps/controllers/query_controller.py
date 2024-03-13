@@ -1,28 +1,25 @@
-from typing import Any, Tuple, List
+from typing import Dict
+import numpy.typing as npt
 from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..utils.constants import WORD_EMBEDDING_DIM
-from ..utils.mock import default_fmt
+from plugins.typing import LLMFmt
 
 vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
-tag = {
-    "cv": "cv",
-    "jd": "jd",
-    "questions": "questions"
-}
 
 
-def query_controller(tag: str, user_id: str, id_filebase: str, fmt=default_fmt) -> List[Tuple[str, Any, Any]]:
+def query_control(tag: str, user_id: str, firebase_id: str, fmt: LLMFmt) -> Dict[str, npt.NDArray]:
     '''
-    Query the vector database based on a specific tag, user_id, id_filebase.
+    Query the vector database based on a specific tag, user_id, firebase_id.
     Return a list of tuples containing the id, payload, and vector.
     '''
-    key = fmt.keys()
-    if tag not in tag:
-        raise ValueError(f"Tag '{tag}' is not defined.")
-
-    collection = f"{tag}_{key}_{user_id}"
-    for collection_name in collection:
-        query_results = vector_database.query(
-            collection_name=collection_name, key='id', value=id_filebase)
+    query_results = {}
+    for key in fmt.keys():
+        collection_name = f"{tag}_{key}_{user_id}"
+        try:
+            query_result = vector_database.query(
+                collection_name=collection_name, key='id', value=firebase_id)
+            query_results[key] = [item[2] for item in query_result]
+        except Exception as e:
+            query_results[key] = []
 
     return query_results
