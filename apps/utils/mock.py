@@ -22,21 +22,44 @@ default_fmt = {
     "SoftSkills": {
         "type": "list",
         "description": "List of soft skills of the candidate."
-<<<<<<< HEAD
-    }
-=======
     },
->>>>>>> a8ff067596e6adb2acecd7f4b3aae7422fe32795
+    "Summary": {
+        "type": "string",
+        "description": "Summary of the extracted keywords."
+    }
 }
 
 question_fmt = {
+    "Degree": {
         "type": "list",
-        "description": "Category of the keywords. e.g. Problem-solving, Leadership, Networking, etc.",
-        "items": {
-            "type": "string",
-            "description": "Keywords extracted from the question."
-            }
-        }
+        "description": "If the question is about the degree of the candidate."
+    },
+    "Experience": {
+        "type": "list",
+        "description": "If the question is about the experience of the candidate."
+    },
+    "TechnicalSkills": {
+        "type": "list",
+        "description": "If the question is about the technical skills of the candidate."
+    },
+    "Responsibilities": {
+        "type": "list",
+        "description": "If the question is about the responsibilities of the candidate."
+    },
+    "Certifications": {
+        "type": "list",
+        "description": "If the question is about the certifications of the candidate."
+    },
+    "SoftSkills": {
+        "type": "list",
+        "description": "If the question is about the soft skills of the candidate."
+    },
+    "Summary": {
+        "type": "string",
+        "description": "Summary of the extracted keywords."
+    }
+}
+    
 
     
     

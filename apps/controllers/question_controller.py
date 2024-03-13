@@ -4,7 +4,7 @@ from .extract_controller import extract_control
 from ..providers.db_provider import DatabaseProvider
 from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..utils.system_prompt import system_prompt_question
-from ..utils.mock import default_fmt
+from ..utils.mock import default_fmt, question_fmt
 from ..models.question_model import QuestionModel
 
 # Define the database and vector database provider
@@ -25,12 +25,12 @@ def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
     - question_data (dict): A dictionary containing the keywords extracted from the content.
     '''
     # Retrieve the raw text
-    raw_text = "\n".join(content)
+    raw_text = title + " \n" + content + " \n" + answer
     # Remove invalid characters from the raw text (only allow alphanumeric characters and spaces)
     raw_text = re.sub(r"[^a-zA-Z0-9\s]", "", raw_text)
 
     # Fetch extract criterias
-    criteria = default_fmt
+    criteria = question_fmt
 
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(
@@ -49,7 +49,8 @@ def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
 
     # Create a payload for the vector database
     payload = {
-        "id": question_id
+        "id": question_id,
+        "summary": extraction["Summary"]
     }
 
     for key, value in word_embeddings.items():

@@ -2,10 +2,7 @@ from fastapi import APIRouter, Depends
 from ..models.news_model import CVUploadsModel, JDModel, QuestionModel
 from ..models.user_model import UserModel
 from ..controllers.cv_controller import cv_control
-<<<<<<< HEAD
-=======
 from ..controllers.jd_controller import jd_control
->>>>>>> a8ff067596e6adb2acecd7f4b3aae7422fe32795
 from ..controllers.question_controller import question_control
 from ..middlewares.auth_middleware import get_current_user
 from ..utils.response_fmt import jsonResponseFmt
