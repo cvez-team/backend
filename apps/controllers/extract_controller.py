@@ -1,8 +1,8 @@
 from typing import Dict, List, Tuple, Any, Union
 import numpy.typing as npt
+from plugins.typing import LLMFmt
 from plugins.llm import LLMGenerator
 from plugins.word_embedding import WordEmbedding
-from plugins.typing import LLMFmt
 
 
 # Define the LLM generator and word embedding instances
@@ -23,7 +23,7 @@ def extract_control(system_prompt: str, prompt: str, fmt: LLMFmt) -> _ExtractCon
 
     # Extract the data by invoking the model
     extraction = generator.generate(system=system_prompt, prompt=prompt)
-    
+
     # Generate word embeddings
     word_embeddings = {}
     for key, value in extraction.items():

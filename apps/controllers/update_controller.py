@@ -1,8 +1,9 @@
 from ..providers.db_provider import DatabaseProvider
+from ..utils.constants import CV_COLLECTION, JD_COLLECTION, QUESTION_COLLECTION
 
-cv_database = DatabaseProvider(collection_name="CVs")
-jd_database = DatabaseProvider(collection_name="JDs")
-question_database = DatabaseProvider(collection_name="Questions")
+cv_database = DatabaseProvider(collection_name=CV_COLLECTION)
+jd_database = DatabaseProvider(collection_name=JD_COLLECTION)
+question_database = DatabaseProvider(collection_name=QUESTION_COLLECTION)
 
 
 def update_cv_content_control(cv_id: str, new_content: str):
