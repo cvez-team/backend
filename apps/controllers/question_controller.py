@@ -1,23 +1,26 @@
 from typing import Any, Dict, List
+import re
 from .extract_controller import extract_control
 from ..providers.db_provider import DatabaseProvider
 from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..utils.system_prompt import system_prompt_question
-from ..utils.mock import default_fmt, question_fmt
+from ..utils.mock import default_fmt
 from ..models.question_model import QuestionModel
-import re
 
 # Define the database and vector database provider
 database = DatabaseProvider(collection_name="Questions")
 vector_database = VectorDatabaseProvider(size=768)
 
+
 def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
     '''
     question_control is a function that controls the creation of a new question.
-    
+
     Args:
-    - content (List[str]): The content of the questions.
-    
+    - title (str): The title of the question.
+    - content (str): The content of the questions.
+    - answer (str): The answer to the question.
+
     Returns:
     - question_data (dict): A dictionary containing the keywords extracted from the content.
     '''
@@ -25,7 +28,7 @@ def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
     raw_text = "\n".join(content)
     # Remove invalid characters from the raw text (only allow alphanumeric characters and spaces)
     raw_text = re.sub(r"[^a-zA-Z0-9\s]", "", raw_text)
-    
+
     # Fetch extract criterias
     criteria = default_fmt
 
@@ -40,18 +43,18 @@ def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:
         answer=answer,
         extraction=extraction
     ).to_dict()
-    
+
     # Upload the extraction to the database
     question_id = database.create(data=question_data)
-    
+
     # Create a payload for the vector database
     payload = {
         "id": question_id
     }
-    
+
     for key, value in word_embeddings.items():
         # Get collection name
-        collection_name = f"question_{key}_cvez"    
+        collection_name = f"question_{key}_cvez"
         # If value is a list
         if isinstance(value, list):
             for item in value:

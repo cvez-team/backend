@@ -9,6 +9,6 @@ services:
     ports:
       - "7860:7860"
     volumes:
-      - .:/app
+      - .:/home/user/app
     env_file:
       - .env

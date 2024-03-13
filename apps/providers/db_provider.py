@@ -1,3 +1,4 @@
+from typing import Any, Dict, List
 from ..configs.firebase_config import db
 
 
@@ -9,11 +10,11 @@ class DatabaseProvider:
 
     def __init__(self, collection_name: str):
         self.collection_name = collection_name
-        self.id_field = "_id"
+        self.id_field = "id"
         # Initialize collection
         self.collection = db.collection(collection_name)
 
-    def getAll(self):
+    def get_all(self) -> List[Dict[str, Any]]:
         '''
         Get all documents from the collection.
         Return a list of documents.
@@ -27,7 +28,7 @@ class DatabaseProvider:
             doc_list.append(doc_dict)
         return doc_list
 
-    def getById(self, doc_id: str):
+    def get_by_id(self, doc_id: str):
         '''
         Get a document from the collection.
         Return the document if it exists, otherwise return None.
@@ -41,7 +42,7 @@ class DatabaseProvider:
         else:
             return None
 
-    def queryEqual(self, key: str, value: str):
+    def query_equal(self, key: str, value: str) -> List[Dict[str, Any]]:
         '''
         Query the collection for documents where the key is equal to the value.
         Return a list of documents.

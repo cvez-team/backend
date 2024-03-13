@@ -22,7 +22,11 @@ default_fmt = {
     "SoftSkills": {
         "type": "list",
         "description": "List of soft skills of the candidate."
+<<<<<<< HEAD
     }
+=======
+    },
+>>>>>>> a8ff067596e6adb2acecd7f4b3aae7422fe32795
 }
 
 question_fmt = {
