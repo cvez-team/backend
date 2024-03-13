@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from ..models.news_model import CVUploadsModel, JDModel, QuestionModel
 from ..models.user_model import UserModel
 from ..controllers.cv_controller import cv_control
+from ..controllers.jd_controller import jd_control
+from ..controllers.question_controller import question_control
 from ..middlewares.auth_middleware import get_current_user
 from ..utils.response_fmt import jsonResponseFmt
 
@@ -32,11 +34,14 @@ async def create_cv(
 @router.post("/jd")
 async def create_jd(jd: JDModel):
 
-    return jsonResponseFmt(jd.model_dump())
+    jd_data = jd_control(jd.title, jd.content, "cvez")
+
+    return jsonResponseFmt(jd_data)
 
 
 # Route for create new question
 @router.post("/question")
 async def create_question(question: QuestionModel):
-
-    return jsonResponseFmt(question.model_dump())
+    question = question_control(
+        title=question.title, content=question.content, answer=question.answer)
+    return jsonResponseFmt(data=question)
