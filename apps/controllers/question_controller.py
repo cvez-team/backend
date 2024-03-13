@@ -1,15 +1,16 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 import re
 from .extract_controller import extract_control
+from ..models.question_model import QuestionModel
 from ..providers.db_provider import DatabaseProvider
 from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..utils.system_prompt import system_prompt_question
-from ..utils.mock import default_fmt, question_fmt
-from ..models.question_model import QuestionModel
+from ..utils.constants import WORD_EMBEDDING_DIM, QUESTION_COLLECTION
+from ..utils.mock import question_fmt
 
 # Define the database and vector database provider
-database = DatabaseProvider(collection_name="Questions")
-vector_database = VectorDatabaseProvider(size=768)
+database = DatabaseProvider(collection_name=QUESTION_COLLECTION)
+vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
 
 
 def question_control(title: str, content: str, answer: str) -> Dict[str, Any]:

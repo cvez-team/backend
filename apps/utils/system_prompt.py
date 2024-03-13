@@ -12,9 +12,20 @@ All comments should use singular pronouns such as "he", "she", "the candidate", 
 system_prompt_jd = '''
 Let's think step by step.
 Respond using only the provided information and do not rely on your basic knowledge. The details given might be out of sequence or incomplete.
-Experience should include required duration time and job name field of work.
+Degree is a Educational qualifications required, e.g., Bachelor's degree in Computer Science.
+Experience should include required duration time and job name field of work. Experiences required at position.
 Only use the given data to determine educational qualifications and certificates; do not make assumptions about these qualifications.
-However, you are allowed to combine the provided details to draw logical conclusions about soft skills.
+Soft skills required for the job, inferred from the provided information. However, you are allowed to combine the provided details to draw logical conclusions about soft skills.
+Must respone promptly, accurately, and professionally.
+Expected structure output must like this:
+{
+    "Degree": []
+    "Experience": []
+    "TechnicalSkills": []
+    "Responsibilities": []
+    "Certifications": []
+    "SoftSkills": []
+}
 '''
 
 # system_prompt_question = '''

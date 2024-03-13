@@ -7,13 +7,14 @@ from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..providers.storage_provider import StorageProvider
 from ..providers.cache_provider import CacheProvider
 from ..utils.system_prompt import system_prompt_cv
+from ..utils.constants import WORD_EMBEDDING_DIM, CV_COLLECTION, CV_STORAGE
 from ..utils.mock import default_fmt
 
 
 # Define the database and vector database provider
-database = DatabaseProvider(collection_name="CVs")
-vector_database = VectorDatabaseProvider(size=96)
-storage = StorageProvider(directory="CVs")
+database = DatabaseProvider(collection_name=CV_COLLECTION)
+vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
+storage = StorageProvider(directory=CV_STORAGE)
 cacher = CacheProvider()
 
 
