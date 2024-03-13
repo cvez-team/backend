@@ -8,6 +8,7 @@ from ..providers.vectordb_provider import VectorDatabaseProvider
 from ..utils.system_prompt import system_prompt_jd
 from ..utils.constants import JD_COLLECTION, WORD_EMBEDDING_DIM
 from ..utils.mock import default_fmt
+import re
 
 # Define the database and vector database provider
 database = DatabaseProvider(collection_name=JD_COLLECTION)
