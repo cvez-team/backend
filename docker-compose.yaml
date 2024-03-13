@@ -1,0 +1,14 @@
+# Use docker compose to launch app locally
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: "cvez-container"
+    image: "cvez-be"
+    ports:
+      - "7860:7860"
+    volumes:
+      - .:/home/user/app
+    env_file:
+      - .env

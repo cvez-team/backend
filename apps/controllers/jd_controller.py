@@ -1,62 +1,51 @@
 from typing import Any, Dict
+import re
 from .extract_controller import extract_control
-from .cv_extracter import get_cv
-from ..models.cv_model import CVModel
+from ..models.jd_model import JDModel
 from ..providers.db_provider import DatabaseProvider
 from ..providers.vectordb_provider import VectorDatabaseProvider
-from ..providers.storage_provider import StorageProvider
-from ..providers.cache_provider import CacheProvider
-from ..utils.system_prompt import system_prompt_cv
-from ..utils.constants import WORD_EMBEDDING_DIM, CV_COLLECTION, CV_STORAGE
+from ..utils.system_prompt import system_prompt_jd
+from ..utils.constants import JD_COLLECTION, WORD_EMBEDDING_DIM
 from ..utils.mock import default_fmt
 
-
 # Define the database and vector database provider
-database = DatabaseProvider(collection_name=CV_COLLECTION)
+database = DatabaseProvider(collection_name=JD_COLLECTION)
 vector_database = VectorDatabaseProvider(size=WORD_EMBEDDING_DIM)
-storage = StorageProvider(directory=CV_STORAGE)
-cacher = CacheProvider()
 
 
-def cv_control(file: bytes, filename: str, user_id: str) -> Dict[str, Any]:
+def jd_control(title: str, content: str, user_id: str) -> Dict[str, Any]:
     '''
-    Extract the data from the CV file, and upload to the database.
+    Extract the data from the JD file, and upload to the database.
     '''
-    # Upload file to Firebase storage
-    path, url = storage.upload(file, filename)
-
-    # Convert the file to raw text
-    cache_file_path = cacher.save_cache_file(file, filename)
-
-    raw_text = get_cv(cache_file_path)
+    raw_text = "\n".join(content)
+    raw_text = re.sub(r"[^a-zA-z0-9\s]", "", raw_text)
 
     # Fetch extract criterias
     criteria = default_fmt
 
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(
-        system_prompt=system_prompt_cv, prompt=raw_text, fmt=criteria
+        system_prompt=system_prompt_jd, prompt=raw_text, fmt=criteria
     )
 
     # Format data to upload
-    cv_data = CVModel(
-        name=filename,
-        path=path,
-        url=url,
+    jd_data = JDModel(
+        title=title,
+        content=content,
         extraction=extraction
     ).to_dict()
 
     # Upload the extraction to the database
-    data_id = database.create(data=cv_data)
-    cv_data["id"] = data_id
+    data_id = database.create(data=jd_data)
+    jd_data["id"] = data_id
 
     # Upload vector to the database
     payload = {
-        "id": "test_id",
+        "id": data_id,
     }
     for key, value in word_embeddings.items():
         # Get collection name
-        collection_name = f"cv_{key}_{user_id}"
+        collection_name = f"jd_{key}_{user_id}"
         # If value is a list
         if isinstance(value, list):
             for item in value:
@@ -71,4 +60,4 @@ def cv_control(file: bytes, filename: str, user_id: str) -> Dict[str, Any]:
             vector_database.insert(
                 collection_name=collection_name, array=value, data=payload)
 
-    return cv_data
+    return jd_data

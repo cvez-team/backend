@@ -1,4 +1,12 @@
 from fastapi import APIRouter
+from ..controllers.get_controller import (
+    get_all_cv_control,
+    get_cv_by_id_control,
+    get_all_jd_control,
+    get_jd_by_id_control,
+    get_all_question_control,
+    get_question_by_id_control,
+)
 from ..utils.response_fmt import jsonResponseFmt
 
 
@@ -9,34 +17,40 @@ router = APIRouter(prefix="/get", tags=["get"])
 # Define route for get all CVs
 @router.get("/cv")
 async def get_all_cvs():
-    return jsonResponseFmt("Get all CVs")
+    cvs = get_all_cv_control()
+    return jsonResponseFmt(cvs)
 
 
 # Define route for get CV by id
 @router.get("/cv/{cv_id}")
 async def get_cv_by_id(cv_id: str):
-    return jsonResponseFmt(f"Get CV by id {cv_id}")
+    cv = get_cv_by_id_control(cv_id)
+    return jsonResponseFmt(cv)
 
 
 # Define route for get all JDs
 @router.get("/jd")
 async def get_all_jds():
-    return jsonResponseFmt("Get all JDs")
+    jds = get_all_jd_control()
+    return jsonResponseFmt(jds)
 
 
 # Define route for get JD by id
 @router.get("/jd/{jd_id}")
 async def get_jd_by_id(jd_id: str):
-    return jsonResponseFmt(f"Get JD by id {jd_id}")
+    jd = get_jd_by_id_control(jd_id)
+    return jsonResponseFmt(jd)
 
 
 # Define route for get all questions
 @router.get("/question")
 async def get_all_questions():
-    return jsonResponseFmt("Get all questions")
+    questions = get_all_question_control()
+    return jsonResponseFmt(questions)
 
 
 # Define route for get question by id
 @router.get("/question/{question_id}")
 async def get_question_by_id(question_id: str):
-    return jsonResponseFmt(f"Get question by id {question_id}")
+    question = get_question_by_id_control(question_id)
+    return jsonResponseFmt(question)

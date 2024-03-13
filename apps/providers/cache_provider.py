@@ -9,6 +9,7 @@ class CacheProvider:
         cache_file_name: str = "__cache__.json",
         cache_dir: str = "cache"
     ):
+        self.cache_dir = os.path.join(os.getcwd(), cache_dir)
         self.cache_path = os.path.join(
             os.getcwd(), cache_dir, cache_file_name)
         self.cache = self.__load()
@@ -46,3 +47,10 @@ class CacheProvider:
         # Remove value from cache
         self.cache.pop(key, None)
         self.__save()
+
+    def save_cache_file(self, file: bytes, filename: str):
+        # Save file to cache
+        cache_file_path = os.path.join(self.cache_dir, filename)
+        with open(cache_file_path, "wb") as f:
+            f.write(file)
+        return cache_file_path

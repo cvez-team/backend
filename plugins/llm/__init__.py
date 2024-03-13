@@ -6,6 +6,7 @@ from .._interface import LLMFmt, LCEL
 from .._utils import create_pydantic_dict, prompt_template
 # Import the model
 from .gpt import model as openai_model
+from .gemini import model as gemini_model
 
 
 class LLMGenerator:
@@ -15,7 +16,7 @@ class LLMGenerator:
 
     def __init__(self, fmt: LLMFmt = {}):
         self.fmt = fmt
-        self.model = openai_model
+        self.model = gemini_model
         self.parser = self.__parser(fmt=self.fmt)
         self.template = self.__template()
 
