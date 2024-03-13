@@ -8,10 +8,11 @@ from ..utils.mock import default_fmt
 import re
 
 # Define the database and vector database provider
-database = DatabaseProvider(collection_name="JDs")
-vector_database = VectorDatabaseProvider(size=768)
+database = DatabaseProvider(collection_name="JD")
+vector_database = VectorDatabaseProvider(size=96)
 
-def jd_control(title: str,content: str, user_id: str) -> Dict[str, Any]:
+
+def jd_control(title: str, content: str, user_id: str) -> Dict[str, Any]:
     '''
     Extract the data from the JD file, and upload to the database.
     '''
@@ -25,11 +26,7 @@ def jd_control(title: str,content: str, user_id: str) -> Dict[str, Any]:
     extraction, word_embeddings = extract_control(
         system_prompt=system_prompt_jd, prompt=raw_text, fmt=criteria
     )
-    # Format data to upload
-    # jd_data = extraction
-    # print(jd_data)
 
-    # Upload file to Firebase storage
     # Format data to upload
     jd_data = JDModel(
         title=title,
@@ -40,13 +37,11 @@ def jd_control(title: str,content: str, user_id: str) -> Dict[str, Any]:
     # Upload the extraction to the database
     data_id = database.create(data=jd_data)
     jd_data["id"] = data_id
-    # Upload the extraction to the database
-    
+
     # Upload vector to the database
     payload = {
         "id": data_id,
     }
-
     for key, value in word_embeddings.items():
         # Get collection name
         collection_name = f"jd_{key}_{user_id}"

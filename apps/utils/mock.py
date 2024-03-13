@@ -1,26 +1,26 @@
 default_fmt = {
     "Degree": {
         "type": "list",
-        "description": "Degree of the content. e.g. B.Tech, M.Tech, B.Sc, M.Sc, MS, BS, BA."
+        "description": "Degree of the candidate. e.g. B.Tech, M.Tech, B.Sc, M.Sc"
     },
     "Experience": {
         "type": "list",
-        "description": "Experience of the content. e.g. Experienced with Cloud Platform (AWS, Azure, GCP)."
+        "description": "Experience of the candidate in years."
     },
     "TechnicalSkills": {
         "type": "list",
-        "description": "List of technical skills of the content. e.g. Java, Python, Linux, SQL, PyTorch, TensorFlow." 
+        "description": "List of technical skills of the candidate."
     },
     "Responsibilities": {
         "type": "list",
-        "description": "List of responsibilities of the content. e.g. Developed a fitness application for bodybuilding exercises on Android using Room Database, RxJava 2, and Retrofit 2."
+        "description": "List of responsibilities of the candidate."
     },
     "Certifications": {
         "type": "list",
-        "description": "List of certifications of the content. e.g. Advanced Data Analysis, Basic SQL."
+        "description": "List of certifications of the candidate."
     },
     "SoftSkills": {
         "type": "list",
-        "description": "List of soft skills of the content. e.g. Language skill, Leadership skills, critical thinking, problem-solving. "
+        "description": "List of soft skills of the candidate."
     },
 }
