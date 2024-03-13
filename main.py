@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 
 # Load environment variables from the `.env` file
 load_dotenv()
+# Load environment variables from the `.env` file
+load_dotenv()
 # Create FastAPI app instance
 app = create_app()
 
@@ -21,5 +23,7 @@ app.include_router(get_router, prefix="/api")
 app.include_router(delete_router, prefix="/api")
 
 # Launch FastAPI app
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=os.environ.get("PORT", 7860))
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=os.environ.get("PORT", 7860))
