@@ -1,7 +1,7 @@
 system_prompt_cv = '''
 Let's think step by step.
 CV details might be out of order or incomplete.
-Analyze the CV concerning the candidate's experience and career. From this, derive logical conclusions about their technical skills, experience, and soft skills.
+Analyze the CV concerning the candidate's experience and career. From this, derive logical conclusions about their technical skills, experience, soft skills, etc.
 The format for educational qualifications should be: Degree - School/University/Organization - GPA - Year of Graduation. It's acceptable if some details are missing.
 Experience should include experienced time and job name field of work based on projects and experiences.
 Ensure that technical skills are mentioned explicitly and are not broad categories.
