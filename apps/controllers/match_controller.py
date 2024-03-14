@@ -41,7 +41,7 @@ def calculate_average_scores(scores: Dict[str, List[List[Tuple[str, float]]]], f
     # Get the deviation of the scores
     deviation = 0
     for key, _fmt in fmt.items():
-        deviation += _fmt["weight"]
+        deviation += _fmt.get("weight", 0)
 
     # Normalize the scores
     for _id in average_scores:
