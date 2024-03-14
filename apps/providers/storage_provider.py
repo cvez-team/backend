@@ -35,3 +35,10 @@ class StorageProvider:
         '''
         blob = bucket.blob(path)
         return blob.download_as_bytes()
+
+    def remove(self, path: str) -> None:
+        '''
+        Remove the file from the storage.
+        '''
+        blob = bucket.blob(path)
+        blob.delete()
