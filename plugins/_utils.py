@@ -3,15 +3,13 @@ from ._interface import LLMFmt, PydanticFmt
 
 
 prompt_template = '''
-Answer the query using the given information only. Do not rely on your basic knowledge. The details given might be out of sequence or incomplete.
+Query: {prompt}
+
 {system}
 
+Expected Output format:
 {instruction}
-
-Here is the information you need to answer the query:
-{prompt}
 '''
-
 
 def get_type_by_type_literal(type_literal: str) -> type:
     if type_literal == "string":

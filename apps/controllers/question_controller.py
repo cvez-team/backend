@@ -8,7 +8,6 @@ from ..providers.db_provider import DatabaseProvider
 from ..utils.system_prompt import system_prompt_question
 from ..utils.constants import QUESTION_COLLECTION
 
-
 # Define the database and vector database provider
 database = DatabaseProvider(collection_name=QUESTION_COLLECTION)
 
@@ -25,28 +24,32 @@ def question_control(title: str, content: str, answer: str, user_id: str, fmt: L
     Returns:
     - question_data (dict): A dictionary containing the keywords extracted from the content.
     '''
-    # Remove invalid characters from the raw text (only allow alphanumeric characters and spaces)
-    raw_text = re.sub(r"[^a-zA-Z0-9\s]", "", content)
-
+    
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(
-        system_prompt=system_prompt_question, prompt=raw_text, fmt=fmt
+        system_prompt=system_prompt_question, prompt=content, fmt=fmt
     )
 
-    # Create a dictionary for the question data
-    question_data = QuestionModel(
-        title=title,
-        content=content,
-        answer=answer,
-        extraction=extraction
-    ).to_dict()
+    try:
+        # Create a dictionary for the question data
+        question_data = QuestionModel(
+            title=title,
+            content=content,
+            answer=answer,
+            extraction=extraction
+        ).to_dict()
 
-    # Upload the extraction to the database
-    question_id = database.create(data=question_data)
-    question_data["id"] = question_id
+        # Upload the extraction to the database
+        question_id = database.create(data=question_data)
+        question_data["id"] = question_id
 
-    # Create a payload for the vector database
-    upload_vector_control(extraction=extraction, word_embeddings=word_embeddings,
-                          tag="question", user_id=user_id, firebase_id=question_id)
+        # Create a payload for the vector database
+        upload_vector_control(extraction=extraction, word_embeddings=word_embeddings,
+                            tag="question", user_id=user_id, firebase_id=question_id)
 
+    except Exception as e:
+        question_data = {
+            "error": str(e)
+        }
+    
     return question_data
