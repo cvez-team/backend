@@ -38,7 +38,8 @@ def delete_cv_by_id_control(cv_id: str):
     for collection in vector_collections:
         vector_ids = vector_database.query(collection, "id", cv_id)
         vector_ids = [vector_id[0] for vector_id in vector_ids]
-        vector_database.delete(collection, vector_ids)
+        if len(vector_ids) > 0:
+            vector_database.delete(collection, vector_ids)
 
     # Delete collection from firebase
     return cv_database.delete(cv_id)
@@ -52,7 +53,8 @@ def delete_question_by_id_control(question_id: str):
     for collection in vector_collections:
         vector_ids = vector_database.query(collection, "id", question_id)
         vector_ids = [vector_id[0] for vector_id in vector_ids]
-        vector_database.delete(collection, vector_ids)
+        if len(vector_ids) > 0:
+            vector_database.delete(collection, vector_ids)
 
     # Delete collection from firebase
     return question_database.delete(question_id)
