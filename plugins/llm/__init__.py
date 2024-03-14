@@ -16,7 +16,7 @@ class LLMGenerator:
 
     def __init__(self, fmt: LLMFmt = {}):
         self.fmt = fmt
-        self.model = gemini_model
+        self.model = openai_model
         self.parser = self.__parser(fmt=self.fmt)
         self.template = self.__template()
 
@@ -37,7 +37,7 @@ class LLMGenerator:
             template=prompt_template,
             input_variables=["system", "prompt"],
             partial_variables={
-                "instruction": self.parser.get_format_instructions()}
+                "instruction": self.parser.get_format_instructions()},
         )
 
     def set_parser(self, fmt: LLMFmt) -> None:
