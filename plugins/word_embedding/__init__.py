@@ -14,6 +14,7 @@ class WordEmbedding:
 
     def __init__(self, dtype: npt.DTypeLike = np.float32):
         self.embedder = gemini_embedder
+        self.embedder = gemini_embedder
         self.dtype = dtype
 
     def embed(self, data: str) -> npt.NDArray:

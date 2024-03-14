@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Union
 import numpy.typing as npt
 import uuid
 from qdrant_client.http.models import VectorParams, Distance, PointStruct, Filter, FieldCondition, MatchValue, PointIdsList
@@ -13,9 +13,9 @@ class VectorDatabaseProvider:
     def __init__(self, size: int, distance: Distance = Distance.COSINE) -> None:
         self.size = size
         self.distance = distance
-        self.available_collections = self.__get_collection()
+        self.available_collections = self.get_collections()
 
-    def __get_collection(self):
+    def get_collections(self):
         '''
         Get all available collections.
         '''
@@ -50,35 +50,36 @@ class VectorDatabaseProvider:
         )[0]
         return record.payload, record.vector
 
-    def search(self, collection_name: str, array: npt.NDArray, limit: int = 10) -> List[Tuple[str, float]]:
+    def search(self, collection_name: str, array: npt.NDArray, limit: int = 10) -> List[Tuple[str, float, Dict]]:
         '''
         Search the collection for the nearest vectors to the array.
-        Return a list of tuples containing the id and score.
+        Return a list of tuples containing the id, score and payload of point.
         '''
         # Search
         query_results = client.search(
             collection_name=collection_name,
             query_vector=array,
-            limit=limit
+            limit=limit,
+            with_payload=True
         )
         # Get results
         results = []
         for result in query_results:
-            results.append((result.id, result.score))
+            results.append((result.id, result.score, result.payload))
         return results
 
     def query(self, collection_name: str, key: str, value: str) -> List[Tuple[str, Any, npt.NDArray]]:
         '''
         Query the point that match the key with value in payload.
         Return a list of tuples containing the id, payload and vector.
-        ''' 
+        '''
         query_results = client.scroll(
             collection_name=collection_name,
             scroll_filter=Filter(
                 must=[
                     FieldCondition(
                         key=key,
-                        condition=MatchValue(
+                        match=MatchValue(
                             value=value
                         )
                     )
@@ -115,13 +116,18 @@ class VectorDatabaseProvider:
         )
         return id
 
-    def delete(self, collection_name: str, id: str):
+    def delete(self, collection_name: str, id: Union[str, List[str]]):
         '''
         Delete data from the collection by id.
         '''
+        if isinstance(id, list):
+            point_ids = id
+        else:
+            point_ids = [id]
+
         client.delete(
             collection_name=collection_name,
             points_selector=PointIdsList(
-                points=[id]
+                points=point_ids
             )
         )

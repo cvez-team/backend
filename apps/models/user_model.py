@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
+from plugins.typing import LLMFmt
 
 
-class UserModel(BaseModel):
-    id: str = Field(..., description="The user's id")
+class UserModel:
+    def __init__(self, uid: str, fmt: LLMFmt):
+        self.id = uid
+        self.fmt = fmt

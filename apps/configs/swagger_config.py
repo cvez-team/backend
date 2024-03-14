@@ -14,6 +14,14 @@ swagger_config = {
         {
             "name": "get",
             "description": "Operations with get data"
+        },
+        {
+            "name": "update",
+            "description": "Operations with update data"
+        },
+        {
+            "name": "delete",
+            "description": "Operations with delete data"
         }
     ]
 }

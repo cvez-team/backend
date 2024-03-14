@@ -12,31 +12,14 @@ All comments should use singular pronouns such as "he", "she", "the candidate", 
 system_prompt_jd = '''
 Let's think step by step.
 Respond using only the provided information and do not rely on your basic knowledge. The details given might be out of sequence or incomplete.
-Degree is a Educational qualifications required, e.g., Bachelor's degree in Computer Science.
-Experience should include required duration time and job name field of work. Experiences required at position.
 Only use the given data to determine educational qualifications and certificates; do not make assumptions about these qualifications.
-Soft skills required for the job, inferred from the provided information. However, you are allowed to combine the provided details to draw logical conclusions about soft skills.
+Degree is a Educational qualifications required, e.g., Bachelor's degree in Computer Science.
+Experiences required at position. Experience should include required duration time and job name field of work. 
+You must extract all Technical skills required, inferred from the provided information.
+Responsibilities for position candidate required, inferred from the provided information.
+However, you are allowed to combine the provided details to draw logical conclusions about soft skills.
 Must respone promptly, accurately, and professionally.
-Expected structure output must like this:
-{
-    "Degree": []
-    "Experience": []
-    "TechnicalSkills": []
-    "Responsibilities": []
-    "Certifications": []
-    "SoftSkills": []
-}
 '''
-
-# system_prompt_question = '''
-# Let's think step by step.
-# Act as an interviewer, preprocess the question and extract the keywords from the question. Example: "What is your troubleshooting process?" ->"Problem-solving", "Tell us about a time you took the lead on a project." -> "Leadership", "What is an IP Address?" -> "Networking".
-# Must summarize the keywords in simple keywords or short phrases e.g. "3 years", "5+ years" or "2-3 years".
-# Must remove any irrelevant or duplicate keywords from the extracted keywords that are having the same meaning or context.
-# Must categorize extracted keywords into degrees, experience, technical skills, responsibilities, certifications, and soft skills based on the context of the question.
-# Must respond promptly, accurately, and professionally.
-# Must not be biased or make assumptions about the question.
-# '''
 
 system_prompt_question = '''
 Let's think step by step.
@@ -48,6 +31,7 @@ Avoid using broad categories for technical skills.
 Using more granular keywords is encouraged.
 Question can have multiple keywords.
 Must respone promptly, accurately, and professionally.
+<<<<<<< HEAD
 Must not be biased or make assumptions about the question.
 General format:
 {
@@ -60,3 +44,6 @@ General format:
   "Summary": "" // <Summary of the question>
 }
 '''
+=======
+'''
+>>>>>>> 5a768e8eab427d344af00c173fd762081f580cfc
