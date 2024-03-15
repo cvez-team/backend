@@ -99,4 +99,26 @@ def match_question_control(cv_id: str, user_id: str, fmt: LLMFmt):
 
         match_results[key] = match_tuples
 
-    return calculate_average_scores(match_results, fmt)
+    return MRR(match_results, fmt)
+
+def MRR(scores: Dict[str, List[List[Tuple[str, float]]]], fmt: LLMFmt) -> Dict[str, float]:
+    mrr = {}
+    for key, values in scores.items():
+        for value in values:
+            print(value)
+            for _id, score in value:
+                if _id not in mrr:
+                    mrr[_id] = 1 / (fmt[key]["weight"] * (score + 1))
+                else:
+                    mrr[_id] += 1 / (fmt[key]["weight"] * (score + 1))
+                    
+    for _id in mrr:
+        mrr[_id] = mrr[_id] / len(scores)
+        
+    return mrr
+                
+                
+        
+                    
+            
+            
