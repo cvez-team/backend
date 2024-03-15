@@ -25,7 +25,7 @@ def question_control(title: str, content: str, answer: str, user_id: str, fmt: L
     - question_data (dict): A dictionary containing the keywords extracted from the content.
     '''
     # Concat the content and answer for the prompt
-    prompt = f"Question: {content}\nAnswer: {answer}"
+    prompt = f"Question: {content}"
 
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(
@@ -41,11 +41,11 @@ def question_control(title: str, content: str, answer: str, user_id: str, fmt: L
     ).to_dict()
 
     # Upload the extraction to the database
-    question_id = database.create(data=question_data)
-    question_data["id"] = question_id
+    # question_id = database.create(data=question_data)
+    # question_data["id"] = question_id
 
     # Create a payload for the vector database
-    upload_vector_control(extraction=extraction, word_embeddings=word_embeddings,
-                          tag="question", user_id=user_id, firebase_id=question_id)
+    # upload_vector_control(extraction=extraction, word_embeddings=word_embeddings,
+    #                       tag="question", user_id=user_id, firebase_id=question_id)
 
     return question_data
