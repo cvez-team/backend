@@ -6,11 +6,11 @@ from apps.routes.match import router as match_router
 from apps.routes.get import router as get_router
 from apps.routes.update import router as update_router
 from apps.routes.delete import router as delete_router
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 
 # Load environment variables from the `.env` file
-load_dotenv()
+load_dotenv(find_dotenv())
 # Create FastAPI app instance
 app = create_app()
 
