@@ -27,6 +27,7 @@ class StorageProvider:
         path = self.__get_ref(filename.replace(" ", "_"))
         blob = bucket.blob(path)
         blob.upload_from_string(file)
+        blob.make_public()
         return path, blob.public_url
 
     def download(self, path: str) -> bytes:

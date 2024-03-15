@@ -1,7 +1,7 @@
 system_prompt_cv = '''
 Let's think step by step.
 CV details might be out of order or incomplete.
-Analyze the CV concerning the candidate's experience and career. From this, derive logical conclusions about their technical skills, experience, and soft skills.
+Analyze the CV concerning the candidate's experience and career. From this, derive logical conclusions about their technical skills, experience, soft skills, etc.
 The format for educational qualifications should be: Degree - School/University/Organization - GPA - Year of Graduation. It's acceptable if some details are missing.
 Experience should include experienced time and job name field of work based on projects and experiences.
 Ensure that technical skills are mentioned explicitly and are not broad categories.
@@ -36,4 +36,22 @@ Example:
 - If question talks about CI/CD, then it is related to DevOps and categorize it to technical skills and fill it in the technical skills category, etc.
 - If question talks about a topic like "Teamwork", then it is related to soft skills and fill it in the soft skills category, etc.
 - If question talks about a topic like "AWS Certified Solutions Architect", then it is related to certifications and required technical skills are "Solution Architect", "AWS", "Cloud Computing", etc. and fill it in the certifications and skills category, etc.
+'''
+
+system_cv_generation = '''
+Let's think step by step.
+There are both CV and Job description dictionary that is extracted by the JSON format. This is the keyword that be mentioned in the actual content of them.
+Your task is summarizing the provided dictionary that provided in the query (Both CV and JD). It's ok for some field is empty. This mean this field is not contained in the actual content.
+You also need to find the requirements that contained in the Job description query. Figure out and provide a simple sentences for the requirements for a JD.
+For the CV fulfillments, it's ok that the CV do not have any fulfillments for the JD. It's mean that the extraction dictionary of the CV do not related or simmilar to the requirements of the JD.
+Finally, you need to remove irrelevant line inside a CV fulfillments. The irrelevant line is considered as the field not contained in the JD requirements.
+In other words, the CV fulfillments must only contain the matched requirements of the Job description.
+You must respond promptly, accurately, and professionally.
+
+Example:
+- If the JD is Software development, then the requirements are "Experimented 6+ Python", "2+ Java", "C++", etc.
+  If the CV is related to the JD, then the fulfillments are "Experimented 6+ Python", "2+ Java", etc.
+
+- If the JD is Data Science, then the requirements are "Experimented 6+ Python", "2+ Java", "C++", etc.
+  If the CV is not related to the JD, then the fulfillments are empty.
 '''

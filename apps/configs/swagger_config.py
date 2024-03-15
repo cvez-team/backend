@@ -22,6 +22,10 @@ swagger_config = {
         {
             "name": "delete",
             "description": "Operations with delete data"
+        },
+        {
+            "name": "generate",
+            "description": "Operations with generate data"
         }
     ]
 }
