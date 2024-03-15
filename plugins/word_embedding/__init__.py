@@ -4,6 +4,7 @@ import numpy.typing as npt
 from .spacy import embedder as spacy_embedder
 from .openai import embedder as openai_embedder
 from .gemini import embedder as gemini_embedder
+# from .mxbai import embedder as mxb_ai_embedder
 
 
 class WordEmbedding:

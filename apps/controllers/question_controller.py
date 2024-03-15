@@ -1,5 +1,4 @@
 from typing import Any, Dict
-import re
 from plugins.typing import LLMFmt
 from .extract_controller import extract_control
 from .upload_vector_controller import upload_vector_control
@@ -25,7 +24,7 @@ def question_control(title: str, content: str, answer: str, user_id: str, fmt: L
     - question_data (dict): A dictionary containing the keywords extracted from the content.
     '''
     # Concat the content and answer for the prompt
-    prompt = f"Question: {content}\nAnswer: {answer}"
+    prompt = f"Question: {content}"
 
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(

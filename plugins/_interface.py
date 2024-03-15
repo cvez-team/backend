@@ -12,6 +12,7 @@ class LLMFmtItem(TypedDict):
     description: Optional[str]
     items: Optional['LLMFmtItem']
     properties: Optional[Dict[str, 'LLMFmtItem']]
+    weight: Optional[float]
 
 
 LLMFmt = Dict[str, LLMFmtItem]
