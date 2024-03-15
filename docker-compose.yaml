@@ -10,5 +10,7 @@ services:
       - "7860:7860"
     volumes:
       - .:/home/user/app
+      - /home/user/app/env
+      - /home/user/cache
     env_file:
       - .env

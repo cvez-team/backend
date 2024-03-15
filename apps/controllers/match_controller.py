@@ -129,3 +129,22 @@ def match_question_control(cv_id: str, limit: int, user_id: str, fmt: LLMFmt):
     match_results = query_match("question", vectors, limit, user_id)
 
     return calculate_average_scores(match_results, fmt)[1]
+
+
+def MRR(scores: Dict[str, List[List[Tuple[str, float]]]], fmt: LLMFmt) -> Dict[str, float]:
+    mrr = {}
+    # Sort the scores
+    scores
+    print(scores)
+    for key, values in scores.items():
+        for value in values:
+            for _id, score in value:
+                # MRR (Mean Reciprocal Rank) measures the average position of the first relevant document
+                # The smaller the MRR, the better the performance
+                if _id in mrr:
+                    mrr[_id] += 1 / (score * fmt[key]["weight"])
+                else:
+                    mrr[_id] = 1 / (score * fmt[key]["weight"])
+    for _id in mrr.keys():
+        mrr[_id] /= len(scores)
+    return mrr

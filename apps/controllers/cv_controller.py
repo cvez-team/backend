@@ -42,11 +42,11 @@ def cv_control(file: bytes, filename: str, user_id: str, fmt: LLMFmt) -> Dict[st
         extraction=extraction
     ).to_dict()
 
-    # Upload the extraction to the database
+    # # Upload the extraction to the database
     data_id = database.create(data=cv_data)
     cv_data["id"] = data_id
 
-    # Upload vector to the database
+    # # Upload vector to the database
     upload_vector_control(extraction=extraction, word_embeddings=word_embeddings,
                           tag="cv", user_id=user_id, firebase_id=data_id)
 

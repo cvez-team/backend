@@ -7,11 +7,11 @@ from apps.routes.get import router as get_router
 from apps.routes.update import router as update_router
 from apps.routes.delete import router as delete_router
 from apps.routes.generate import router as generate_router
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 
 # Load environment variables from the `.env` file
-load_dotenv()
+load_dotenv(find_dotenv())
 # Create FastAPI app instance
 app = create_app()
 
@@ -26,7 +26,5 @@ app.include_router(generate_router, prefix="/api")
 
 
 # Launch FastAPI app
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=os.environ.get("PORT", 7860))
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=os.environ.get("PORT", 7860))
