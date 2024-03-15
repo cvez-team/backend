@@ -128,7 +128,7 @@ def match_question_control(cv_id: str, limit: int, user_id: str, fmt: LLMFmt):
     # Find matched CVs
     match_results = query_match("question", vectors, limit, user_id)
 
-    return MRR(match_results, fmt)
+    return calculate_average_scores(match_results, fmt)
 
 def MRR(scores: Dict[str, List[List[Tuple[str, float]]]], fmt: LLMFmt) -> Dict[str, float]:
     mrr = {}
