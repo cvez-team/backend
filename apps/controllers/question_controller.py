@@ -24,32 +24,28 @@ def question_control(title: str, content: str, answer: str, user_id: str, fmt: L
     Returns:
     - question_data (dict): A dictionary containing the keywords extracted from the content.
     '''
-    
+    # Concat the content and answer for the prompt
+    prompt = f"Question: {content}\nAnswer: {answer}"
+
     # Extract features from the raw text
     extraction, word_embeddings = extract_control(
-        system_prompt=system_prompt_question, prompt=content, fmt=fmt
+        system_prompt=system_prompt_question, prompt=prompt, fmt=fmt
     )
 
-    try:
-        # Create a dictionary for the question data
-        question_data = QuestionModel(
-            title=title,
-            content=content,
-            answer=answer,
-            extraction=extraction
-        ).to_dict()
+    # Create a dictionary for the question data
+    question_data = QuestionModel(
+        title=title,
+        content=content,
+        answer=answer,
+        extraction=extraction
+    ).to_dict()
 
-        # Upload the extraction to the database
-        question_id = database.create(data=question_data)
-        question_data["id"] = question_id
+    # Upload the extraction to the database
+    question_id = database.create(data=question_data)
+    question_data["id"] = question_id
 
-        # Create a payload for the vector database
-        upload_vector_control(extraction=extraction, word_embeddings=word_embeddings,
-                            tag="question", user_id=user_id, firebase_id=question_id)
+    # Create a payload for the vector database
+    upload_vector_control(extraction=extraction, word_embeddings=word_embeddings,
+                          tag="question", user_id=user_id, firebase_id=question_id)
 
-    except Exception as e:
-        question_data = {
-            "error": str(e)
-        }
-    
     return question_data

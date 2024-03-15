@@ -21,6 +21,7 @@ def query_control(tag: str, user_id: str, firebase_id: str, fmt: LLMFmt) -> Dict
                 collection_name=collection_name, key='id', value=firebase_id)
             query_results[key] = [item[2] for item in query_result]
         except Exception as e:
+            print(e)
             query_results[key] = []
 
     return query_results

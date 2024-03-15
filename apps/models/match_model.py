@@ -7,3 +7,4 @@ class MatchCVModel(BaseModel):
 
 class MatchQuestionModel(BaseModel):
     cv_id: str = Field(..., description="The id of the cv")
+    limit: int = Field(100, description="The limit of the match result")
