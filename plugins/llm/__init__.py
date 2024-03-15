@@ -37,7 +37,7 @@ class LLMGenerator:
             template=prompt_template,
             input_variables=["system", "prompt"],
             partial_variables={
-                "instruction": self.parser.get_format_instructions()}
+                "instruction": self.parser.get_format_instructions()},
         )
 
     def set_parser(self, fmt: LLMFmt) -> None:

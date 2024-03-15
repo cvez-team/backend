@@ -2,14 +2,17 @@ from langchain.pydantic_v1 import Field
 from ._interface import LLMFmt, PydanticFmt
 
 
-prompt_template = '''
-Answer the query using the given information only. Do not rely on your basic knowledge. The details given might be out of sequence or incomplete.
+prompt_template = '''Answer the query. Use the information provided in the query to answer the question.
+The query sometimes not contain directly a keywords, but you can use the information to answer the question.
+
+Query:
+{prompt}
+
+Questions:
 {system}
 
+The output format expected as the follow instructions:
 {instruction}
-
-Here is the information you need to answer the query:
-{prompt}
 '''
 
 
