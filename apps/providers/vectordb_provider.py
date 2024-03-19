@@ -43,7 +43,7 @@ class VectorDatabaseProvider:
         Return the payload and the vector.
         '''
         record = client.retrieve(
-            collection_collection_name=collection_name,
+            collection_name=collection_name,
             ids=[id],
             with_vectors=True,
             with_payload=True
@@ -58,7 +58,7 @@ class VectorDatabaseProvider:
         # Search
         query_results = client.search(
             collection_name=collection_name,
-            query_vector=array,
+            query_vector=array, 
             limit=limit,
             with_payload=True
         )
