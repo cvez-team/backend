@@ -19,9 +19,6 @@ COPY --chown=user:user requirements.txt $CLOUD_HOME/app
 # Install the requirements
 RUN pip install -r requirements.txt
 
-# Install spacy model
-RUN python -m spacy download en_core_web_sm
-
 # Copy the rest of the files
 COPY --chown=user:user . $CLOUD_HOME/app
 
