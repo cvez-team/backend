@@ -29,7 +29,7 @@ class UpdateProjectInterface(BaseModel):
 
 
 class UpdateLastOpenedProjectInterface(BaseModel):
-    last_open: str = Field(..., title="Last Opened Time")
+    last_opened: str = Field(..., title="Last Opened Time")
 
 
 class UpdateMemberProjectInterface(BaseModel):

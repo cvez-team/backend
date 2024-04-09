@@ -40,6 +40,7 @@ def login_control(access_token: AnyStr):
     active_users = cacher.get("active_users")
     if not active_users:
         active_users = []
+
     if user.id not in active_users:
         active_users.append(user.id)
         cacher.set("active_users", active_users)

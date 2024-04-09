@@ -26,15 +26,13 @@ class CVUploadResponseInterface(BaseModel):
 
 class _CVUploadProgressInterface(BaseModel):
     percent: Dict[str, int] = Field(..., description="Upload percentage")
-    uploaded_bytes: Dict[str, int] = Field(..., description="Uploaded bytes")
-    total_bytes: Dict[str, int] = Field(..., description="Total bytes")
     analyzed: Dict[str, bool] = Field(..., description="Analyzed status")
 
 
 class CVUploadProgressInterface(BaseModel):
     msg: str = Field(..., description="Message response")
-    data: _CVUploadProgressInterface = Field(...,
-                                             description="Upload progress")
+    data: _CVUploadProgressInterface | None = Field(...,
+                                                    description="Upload progress")
 
 
 class UploadCVInterface:

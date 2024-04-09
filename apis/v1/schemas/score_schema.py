@@ -25,3 +25,8 @@ class ScoreSchema:
     @staticmethod
     def from_dict(data: Dict):
         return ScoreSchema(**data)
+
+    def update_score(self, score_data: Dict[str, float]):
+        self.overall = score_data["overall"]
+        for key, value in score_data["criteria"].items():
+            setattr(self, key, value)

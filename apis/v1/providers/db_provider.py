@@ -1,6 +1,9 @@
 from typing import Any, AnyStr, Dict, List
+import time
+from firebase_admin import firestore
 from .cache_provider import CacheProvider
 from ..configs.firebase_config import db
+from ..utils.logger import log_firebase
 
 
 class DatabaseProvider:
@@ -19,15 +22,21 @@ class DatabaseProvider:
         Get all documents from the collection.
         Return a list of documents.
         '''
+        _s = time.perf_counter()
         docs = self.collection.stream()
+        _e = time.perf_counter() - _s
+
         doc_list = []
         for doc in docs:
+            log_firebase(f"Database read to {doc.id} [{_e:.2f}s]")
+
             doc_dict = doc.to_dict()
             doc_dict[self.id_field] = doc.id
             doc_list.append(doc_dict)
             # Save to cache
             self.cacher.set(
                 f"{self.collection_name}:{doc.id}", doc_dict)
+
         return doc_list
 
     def get_all_by_ids(self, ids: List[AnyStr]) -> List[Dict[str, Any]]:
@@ -47,12 +56,22 @@ class DatabaseProvider:
         # Get from database documents not in cache
         doc_refs = [self.collection.document(
             _id) for _id in ids if _id not in cache_doc_ids]
+
         if len(doc_refs) != 0:
+            _s = time.perf_counter()
             docs = db.get_all(references=doc_refs)
+            _e = time.perf_counter() - _s
+
             for doc in docs:
+                log_firebase(f"Database read to {doc.id} [{_e:.2f}s]")
+
                 doc_dict = doc.to_dict()
+                if not doc_dict:
+                    continue
+
                 doc_dict[self.id_field] = doc.id
                 doc_list.append(doc_dict)
+
                 # Save to cache
                 self.cacher.set(
                     f"{self.collection_name}:{doc.id}", doc_dict)
@@ -66,11 +85,18 @@ class DatabaseProvider:
         '''
         # Get from cache
         doc = self.cacher.get(f"{self.collection_name}:{doc_id}")
+
         if not doc:
+            _s = time.perf_counter()
             doc = self.collection.document(doc_id).get()
+            _e = time.perf_counter() - _s
+
+            log_firebase(f"Database read to {doc_id} [{_e:.2f}s]")
+
             if doc.exists:
                 doc_dict = doc.to_dict()
                 doc_dict[self.id_field] = doc_id
+
                 # Save to cache
                 self.cacher.set(
                     f"{self.collection_name}:{doc_id}", doc_dict)
@@ -85,9 +111,34 @@ class DatabaseProvider:
         Query the collection for documents where the key is equal to the value.
         Return a list of documents.
         '''
-        docs = self.collection.where(key, "==", value).stream()
+        _s = time.perf_counter()
+        docs = self.collection.where(filter=firestore.firestore.FieldFilter(
+            key, "==", value)).stream()
+        _e = time.perf_counter() - _s
+
         doc_list = []
         for doc in docs:
+            log_firebase(f"Database read to {doc.id} [{_e:.2f}s]")
+
+            doc_dict = doc.to_dict()
+            doc_dict[self.id_field] = doc.id
+            doc_list.append(doc_dict)
+        return doc_list
+
+    def query_similar(self, key: AnyStr, value: AnyStr) -> List[Dict[str, Any]]:
+        '''
+        Query the collection for documents where the key is similar to the value.
+        Return a list of documents.
+        '''
+        _s = time.perf_counter()
+        docs = self.collection.where(filter=firestore.firestore.FieldFilter(
+            key, ">=", value)).where(filter=firestore.firestore.FieldFilter(key, "<=", value + "\uf8ff")).stream()
+        _e = time.perf_counter() - _s
+
+        doc_list = []
+        for doc in docs:
+            log_firebase(f"Database read to {doc.id} [{_e:.2f}s]")
+
             doc_dict = doc.to_dict()
             doc_dict[self.id_field] = doc.id
             doc_list.append(doc_dict)
@@ -98,7 +149,11 @@ class DatabaseProvider:
         Create a new document in the collection.
         Return the document id.
         '''
+        _s = time.perf_counter()
         doc_ref = self.collection.add(data)
+        _e = time.perf_counter() - _s
+
+        log_firebase(f"Database created {doc_ref[1].id} [{_e:.2f}s]")
         return doc_ref[1].id
 
     def update(self, doc_id: AnyStr, data: Dict) -> None:
@@ -109,7 +164,12 @@ class DatabaseProvider:
         self.cacher.set(f"{self.collection_name}:{doc_id}", {
             **self.get_by_id(doc_id), **data
         })
+
+        _s = time.perf_counter()
         self.collection.document(doc_id).set(data, merge=True)
+        _e = time.perf_counter() - _s
+
+        log_firebase(f"Database updated {doc_id} [{_e:.2f}s]")
 
     def delete(self, doc_id: AnyStr) -> None:
         '''
@@ -117,4 +177,9 @@ class DatabaseProvider:
         '''
         # Remove data in cache
         self.cacher.remove(f"{self.collection_name}:{doc_id}")
+
+        _s = time.perf_counter()
         self.collection.document(doc_id).delete()
+        _e = time.perf_counter() - _s
+
+        log_firebase(f"Database deleted {doc_id} [{_e:.2f}s]")

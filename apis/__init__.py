@@ -7,6 +7,7 @@ from .v1.routes.cv import router as cv_router
 from .v1.routes.jd import router as jd_router
 from .v1.routes.question_bank import router as question_bank_router
 from .v1.routes.match import router as matching_router
+from .v1.routes.utils import router as utils_router
 
 api_v1_router = APIRouter(prefix="/v1")
 
@@ -19,3 +20,4 @@ api_v1_router.include_router(cv_router)
 api_v1_router.include_router(jd_router)
 api_v1_router.include_router(question_bank_router)
 api_v1_router.include_router(matching_router)
+api_v1_router.include_router(utils_router)

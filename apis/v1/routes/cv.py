@@ -1,4 +1,5 @@
 from typing import Annotated
+from io import BytesIO
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from ..schemas.user_schema import UserSchema
@@ -48,26 +49,25 @@ async def upload_cvs(
     return jsonResponseFmt({"progress_id": upload_id})
 
 
-@router.post("/{project_id}/{position_id}/upload", response_model=CVResponseInterface)
+@router.post("/{position_id}/upload", response_model=CVResponseInterface)
 async def upload_cv(
-    project_id: str,
     position_id: str,
     cv: Annotated[UploadCVInterface.cv, UploadCVInterface.cv_default]
 ):
-    await upload_cv_data(project_id, position_id, cv)
+    await upload_cv_data(position_id, cv)
     return jsonResponseFmt(None, "CV uploaded successfully")
 
 
-@router.get("/{progress_id}", response_model=CVUploadProgressInterface)
-async def get_progress(progress_id: str):
-    progress = get_upload_progress(progress_id)
+@router.get("/{watch_id}", response_model=CVUploadProgressInterface)
+async def get_progress(watch_id: str):
+    progress = get_upload_progress(watch_id)
     return jsonResponseFmt(progress)
 
 
 @router.get("/{project_id}/{position_id}/{cv_id}/download", response_class=StreamingResponse)
 async def download_cv(project_id: str, position_id: str, cv_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
     cv_content = await download_cv_content(project_id, position_id, cv_id, user)
-    return StreamingResponse(cv_content)
+    return StreamingResponse(BytesIO(cv_content), media_type="application/octet-stream", headers={"Content-Disposition": f"attachment; filename={cv_id}.pdf"})
 
 
 @router.delete("/{project_id}/{position_id}/{cv_id}", response_model=CVResponseInterface)

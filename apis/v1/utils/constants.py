@@ -21,3 +21,4 @@ CV_STORAGE = "CVs"
 # Utilities
 PLACEHOLDER_IMAGE = "https://i.pravatar.cc/150"
 DEFAULT_LLM_PROVIDER = "gpt"
+ALLOWED_EXTENSIONS = ["pdf", "docx"]

@@ -96,7 +96,7 @@ class PositionSchema:
         '''
         positions = position_db.get_all_by_ids(position_ids)
         return [PositionSchema.from_dict(position) for position in positions]
-    
+
     @staticmethod
     def find_by_id(position_id: AnyStr):
         '''
@@ -104,7 +104,7 @@ class PositionSchema:
         '''
         position = position_db.get_by_id(position_id)
         return PositionSchema.from_dict(position)
-    
+
     def create_position(self):
         position_id = position_db.create(self.to_dict(include_id=False))
         self.id = position_id
@@ -112,10 +112,46 @@ class PositionSchema:
         position_db.cacher.set(
             f"{position_db.collection_name}:{position_id}", self.to_dict(include_id=True))
         return self
-    
+
     def update_position(self, data: Dict):
         position_db.update(self.id, data)
-        # Add data to cache
-        position_db.cacher.set(
-            f"{position_db.collection_name}:{self.id}", self.to_dict(include_id=True))
-        return self
+
+    def close_position(self):
+        self.update_position({"is_closed": True})
+
+    def open_position(self):
+        self.update_position({"is_closed": False})
+
+    def delete_position(self):
+        position_db.delete(self.id)
+
+    def update_cv(self, cv_id: AnyStr, is_add: bool = True):
+        '''
+        Update CVs in position.
+        '''
+        if is_add:
+            self.cvs.append(cv_id)
+        else:
+            self.cvs.remove(cv_id)
+        self.update_position({"cvs": self.cvs})
+
+    def update_jd(self, jd_id: AnyStr):
+        '''
+        Update JD in position.
+        '''
+        self.update_position({"jd": jd_id})
+
+    def find_criteria_by_name(self, criteria_name: AnyStr):
+        '''
+        Find criteria by name.
+        '''
+        for criteria in self.criterias:
+            if criteria.name == criteria_name:
+                return criteria
+        return None
+
+    def get_total_criteria_score(self):
+        '''
+        Get total score of all criterias.
+        '''
+        return sum([criteria.score for criteria in self.criterias])

@@ -34,6 +34,10 @@ swagger_config = {
         {
             "name": "Match",
             "description": "Match CV and JD"
+        },
+        {
+            "name": "Utils",
+            "description": "Utilities"
         }
     ]
 }

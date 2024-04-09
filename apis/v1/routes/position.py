@@ -6,6 +6,7 @@ from ..interfaces.position_interface import (
     UpdatePositionInterface,
     PositionsResponseInterface,
     PositionResponseInterface,
+    UpdateCriteriaInterface
 )
 from ..middlewares.auth_middleware import get_current_user
 from ..controllers.position_controller import (
@@ -13,8 +14,7 @@ from ..controllers.position_controller import (
     get_position_by_id,
     create_new_position,
     update_current_position,
-    close_current_position,
-    open_current_position,
+    update_status_current_position,
     delete_current_position,
 )
 from ..utils.response_fmt import jsonResponseFmt
@@ -47,15 +47,21 @@ async def update_position(project_id: str, position_id: str, data: UpdatePositio
     return jsonResponseFmt(None, f"Update position with id {position_id} successfully")
 
 
+@router.put("/{project_id}/criteria/{position_id}", response_model=PositionResponseInterface)
+async def update_position_criteria(project_id: str, position_id: str, data: UpdateCriteriaInterface, user: Annotated[UserSchema, Depends(get_current_user)]):
+    update_current_position(project_id, position_id, data, user)
+    return jsonResponseFmt(None, f"Update position criteria with id {position_id} successfully")
+
+
 @router.put("/{project_id}/close/{position_id}", response_model=PositionResponseInterface)
 async def close_position(project_id: str, position_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
-    close_current_position(project_id, position_id, user)
+    update_status_current_position(project_id, position_id, user, is_closed=True)
     return jsonResponseFmt(None, f"Close position with id {position_id} successfully")
 
 
 @router.put("/{project_id}/open/{position_id}", response_model=PositionResponseInterface)
 async def open_position(project_id: str, position_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
-    open_current_position(project_id, position_id, user)
+    update_status_current_position(project_id, position_id, user, is_closed=False)
     return jsonResponseFmt(None, f"Open position with id {position_id} successfully")
 
 

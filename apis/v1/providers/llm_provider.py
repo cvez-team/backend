@@ -1,4 +1,5 @@
 from typing import AnyStr, List
+import time
 from fastapi import HTTPException, status
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
@@ -7,6 +8,7 @@ from ..configs.llm_config import gpt_model, gemini_model
 from ..utils.utils import create_pydantic_object
 from ..utils.prompt import prompt_template
 from ..utils.constants import DEFAULT_LLM_PROVIDER
+from ..utils.logger import log_llm
 
 
 class LLMGenerator:
@@ -19,10 +21,17 @@ class LLMGenerator:
 
     def generate(self, system: AnyStr, prompt: AnyStr):
         try:
-            return self.chain.invoke({
+            _s = time.perf_counter()
+            answer = self.chain.invoke({
                 "system": system,
                 "prompt": prompt
             })
+            _e = time.perf_counter() - _s
+
+            log_llm(f"{answer} [{_e:.2f}s]")
+
+            return answer
+
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

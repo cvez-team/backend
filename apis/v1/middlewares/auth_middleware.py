@@ -36,7 +36,10 @@ def get_current_user(credentials: Annotated[HTTPAuthorizationCredentials, Depend
 
     # Check if user is active
     active_users = cacher.get("active_users")
-    if not active_users or uid not in active_users:
+    if not active_users:
+        active_users = []
+
+    if uid not in active_users:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Token",
@@ -44,5 +47,12 @@ def get_current_user(credentials: Annotated[HTTPAuthorizationCredentials, Depend
 
     # Get user data
     user = UserSchema.find_by_id(uid)
+
+    # If user is not found, return Un-authorized.
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Token",
+        )
 
     return user

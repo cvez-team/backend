@@ -2,6 +2,7 @@ from typing import Any, AnyStr, ByteString
 import os
 import json
 from threading import Timer
+from ..utils.logger import log_cache
 
 
 class CacheProvider:
@@ -36,7 +37,12 @@ class CacheProvider:
 
     def get(self, key: str) -> Any | None:
         # Get value from cache
-        return self.cache.get(key, None)
+        data = self.cache.get(key, None)
+        if not data:
+            log_cache(f"Cache miss for {key}")
+        else:
+            log_cache(f"Cache hit for {key}")
+        return data
 
     def gets(self, keys: list[str]) -> list[Any] | None:
         # Get values from cache
@@ -48,6 +54,7 @@ class CacheProvider:
     def set(self, key: AnyStr, value: Any, ttl: int = None) -> None:
         # Set value in cache
         self.cache[key] = value
+        log_cache(f"Set cache for {key}")
         # Set timer to remove value from cache
         if ttl:
             Timer(ttl, self.remove, [key]).start()
@@ -69,6 +76,7 @@ class CacheProvider:
     def remove(self, key: str) -> None:
         # Remove value from cache
         self.cache.pop(key, None)
+        log_cache(f"Remove cache for {key}")
         if not self.in_memory:
             self.__save()
 
@@ -79,14 +87,23 @@ class CacheProvider:
         if not self.in_memory:
             self.__save()
 
-    def save_cache_file(self, file: ByteString, filename: AnyStr) -> AnyStr:
+    def save_cache_file(self, data: ByteString, filename: AnyStr) -> AnyStr:
         # Save file to cache
         cache_file_path = os.path.join(self.cache_dir, filename)
         with open(cache_file_path, "wb") as f:
-            f.write(file)
+            f.write(data)
+        log_cache(f"Save cache file for {filename}")
         return cache_file_path
 
     def remove_cache_file(self, filename: AnyStr) -> None:
         # Remove file from cache
         cache_file_path = os.path.join(self.cache_dir, filename)
         os.remove(cache_file_path)
+        log_cache(f"Remove cache file for {filename}")
+
+    def reset_cache(self) -> None:
+        # Reset cache
+        self.cache = {}
+        log_cache("Cache burst!")
+        if not self.in_memory:
+            self.__save()

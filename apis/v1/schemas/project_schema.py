@@ -101,13 +101,26 @@ class ProjectSchema:
         project_db.cacher.set(
             f"{project_db.collection_name}:{project_id}", self.to_dict(include_id=True))
         return self
-    
-    def update_positions(self, positions_id: AnyStr, is_add: bool = True):
+
+    def update_project(self, data):
+        project_db.update(self.id, data)
+
+    def update_members(self, members: List[AnyStr], is_add: bool = True):
+        if is_add:
+            self.members.extend(members)
+        else:
+            self.members = list(set(self.members) - set(members))
+        # Add data to cache
+        project_db.update(self.id, {"members": self.members})
+
+    def delete_project(self):
+        project_db.delete(self.id)
+
+    def update_positions(self, positions_id: AnyStr, is_add: bool):
         if is_add:
             self.positions.append(positions_id)
         else:
             self.positions.remove(positions_id)
         # Add data to cache
         project_db.update(self.id, {"positions": self.positions})
-        return self  
-    
+        return self

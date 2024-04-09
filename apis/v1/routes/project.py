@@ -16,7 +16,6 @@ from ..controllers.project_controller import (
     get_project_by_id,
     create_new_project,
     update_current_project,
-    update_last_opened_project,
     update_member_project,
     delete_current_project,
     restore_current_project
@@ -46,36 +45,36 @@ async def create_project(data: CreateProjectInterface, user: Annotated[UserSchem
 
 
 @router.put("/{project_id}", response_model=ProjectResponseInterface)
-async def update_project(project_id: int, data: UpdateProjectInterface, user: Annotated[UserSchema, Depends(get_current_user)]):
+async def update_project(project_id: str, data: UpdateProjectInterface, user: Annotated[UserSchema, Depends(get_current_user)]):
     update_current_project(project_id, data, user)
     return jsonResponseFmt(None, f"Project {project_id} updated successfully")
 
 
 @router.put("/last/{project_id}", response_model=ProjectResponseInterface)
-async def update_last_opened_project(project_id: int, data: UpdateLastOpenedProjectInterface, user: Annotated[UserSchema, Depends(get_current_user)]):
-    update_last_opened_project(project_id, data, user)
+async def update_last_opened_project(project_id: str, data: UpdateLastOpenedProjectInterface, user: Annotated[UserSchema, Depends(get_current_user)]):
+    update_current_project(project_id, data, user)
     return jsonResponseFmt(None, f"Project {project_id} last opened updated successfully")
 
 
 @router.put("/share/{project_id}", response_model=ProjectResponseInterface)
-async def share_project(project_id: int, data: UpdateMemberProjectInterface, user: Annotated[UserSchema, Depends(get_current_user)]):
+async def share_project(project_id: str, data: UpdateMemberProjectInterface, user: Annotated[UserSchema, Depends(get_current_user)]):
     update_member_project(project_id, data, user)
     return jsonResponseFmt(None, f"Project {project_id} shared successfully")
 
 
 @router.delete("/{project_id}")
-async def delete_project(project_id: int, user: Annotated[UserSchema, Depends(get_current_user)]):
+async def delete_project(project_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
     delete_current_project(project_id, user)
     return jsonResponseFmt(None, f"Delete project with id {project_id} successfully")
 
 
 @router.put("/restore/{project_id}")
-async def restore_project(project_id: int, user: Annotated[UserSchema, Depends(get_current_user)]):
+async def restore_project(project_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
     restore_current_project(project_id, user)
     return jsonResponseFmt(None, f"Restore project with id {project_id} successfully")
 
 
 @router.delete("/purge/{project_id}")
-async def purge_project(project_id: int, user: Annotated[UserSchema, Depends(get_current_user)]):
+async def purge_project(project_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
     delete_current_project(project_id, user, is_purge=True)
     return jsonResponseFmt(None, f"Purge project with id {project_id} successfully")

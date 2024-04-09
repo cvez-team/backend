@@ -73,6 +73,11 @@ class UserSchema:
         )
 
     @staticmethod
+    def find_all():
+        users = user_db.get_all()
+        return [UserSchema.from_dict(user) for user in users]
+
+    @staticmethod
     def find_by_email(email: AnyStr):
         queries = user_db.query_equal("email", email)
         if len(queries) == 0:
@@ -82,11 +87,18 @@ class UserSchema:
     @staticmethod
     def find_by_id(uid: AnyStr):
         data = user_db.get_by_id(uid)
+        if not data:
+            return None
         return UserSchema.from_dict(data)
 
     @staticmethod
     def find_all_by_ids(uids: List[AnyStr]):
         users = user_db.get_all_by_ids(uids)
+        return [UserSchema.from_dict(user) for user in users if user]
+
+    @staticmethod
+    def find_user_by_substring(substring: AnyStr):
+        users = user_db.query_similar("email", substring)
         return [UserSchema.from_dict(user) for user in users]
 
     def create_user(self):
@@ -94,9 +106,10 @@ class UserSchema:
         self.id = user_id
         return self
 
-    def update_user_projects(self, project_id: AnyStr, is_add: bool):
+    def update_user_projects(self, project_id: AnyStr, is_add: bool, key: AnyStr = "projects"):
         if is_add:
-            self.projects.append(project_id)
-        else:   
-            self.projects.remove(project_id)
-        user_db.update(self.id, {"projects": self.projects})
+            setattr(self, key, [*getattr(self, key), project_id])
+        else:
+            setattr(self, key, [project for project in getattr(
+                self, key) if project != project_id])
+        user_db.update(self.id, {f"{key}": getattr(self, key)})

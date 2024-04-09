@@ -1,9 +1,11 @@
 from typing import AnyStr, Dict
+from pydantic import BaseModel
 from fastapi import HTTPException, status
 from .user_controller import get_all_users_by_ids
 from ..interfaces.project_interface import TypeGetAllProjects
 from ..schemas.user_schema import UserSchema
 from ..schemas.project_schema import ProjectSchema
+
 
 
 def get_all_projects_by_ids(user: UserSchema, get_type: TypeGetAllProjects):
@@ -116,7 +118,7 @@ def create_new_project(data: Dict, user: UserSchema):
 
 
 # Update project name, alias, and description
-def update_current_project(project_id: AnyStr, data: Dict, user: UserSchema):
+def update_current_project(project_id: AnyStr, data: BaseModel, user: UserSchema):
     '''
     Update current project.
     '''
@@ -129,43 +131,89 @@ def update_current_project(project_id: AnyStr, data: Dict, user: UserSchema):
 
     # Get project by id
     project = ProjectSchema.find_by_id(project_id)
-
-    # Check if project exists
     if not project:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found."
         )
+    
     # Update project in database
-    update = ProjectSchema(
-        name=data.name,
-        alias=data.alias,
-        description=data.description,
-        owner=user.id,
-    ).update_project()
-
-    # Update user in database
-    user.update_user_projects(project.id, is_add=True)
-
-    return update
-
-# Update last opened timestamp of the project
-def update_last_opened_project(project_id: AnyStr, data: Dict, user: UserSchema):
-    ...
+    project.update_project(data=data.model_dump(exclude_defaults=True))
 
 
 # Update member permission of the project
-def update_member_project(project_id: AnyStr, data: Dict, user: UserSchema):
-    ...
+def update_member_project(project_id: AnyStr, data: BaseModel, user: UserSchema):
+    '''
+    Update member permission of the project.
+    '''
+    # Check if user has access to the project
+    if project_id not in user.projects:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this project."
+        )
+    
+    # Get project by id
+    project = ProjectSchema.find_by_id(project_id)
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found."
+        )
 
+    # Update project in database
+    project.update_members(data.members, is_add=data.is_add)
+
+    # Iterate through members and update user in database
+    for member_id in data.members:
+        # Get user by id
+        member = UserSchema.find_by_id(member_id)
+        member.update_user_projects(project.id, is_add=data.is_add, key="shared")
 
 # Delete project
 def delete_current_project(project_id: AnyStr, user: UserSchema, is_purge: bool = False):
     '''
     Delete current project.
-    ''' 
+    '''
     # Check if user has access to the project
     if project_id not in user.projects:
+        if is_purge:
+            if project_id not in user.trash:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You don't have access to this project."
+                )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have access to this project."
+            )
+
+    # Get project by id
+    project = ProjectSchema.find_by_id(project_id)
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found."
+        )
+    
+    if is_purge:
+        # Purge project in database
+        project.delete_project()
+        user.update_user_projects(project.id, is_add=False, key="trash")
+    else:
+        # Update user in database
+        user.update_user_projects(project.id, is_add=True, key="trash")
+        user.update_user_projects(project.id, is_add=False, key="projects")
+
+
+# Restore project
+def restore_current_project(project_id: AnyStr, user: UserSchema):
+    '''
+    Restore current project.
+    '''
+    # Check if user has access to the project
+    if project_id not in user.trash:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have access to this project."
@@ -173,21 +221,12 @@ def delete_current_project(project_id: AnyStr, user: UserSchema, is_purge: bool 
 
     # Get project by id
     project = ProjectSchema.find_by_id(project_id)
-
-    # Check if project exists
     if not project:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found."
         )
-    # Update project in database
-    delete = ProjectSchema.delete_project(project_id, is_purge)
-
+    
     # Update user in database
-    user.update_user_projects(project.id, is_add=True)
-
-    return delete
-
-# Restore project
-def restore_current_project(project_id: AnyStr, user: UserSchema):
-    ...
+    user.update_user_projects(project.id, is_add=True, key="projects")
+    user.update_user_projects(project.id, is_add=False, key="trash")
