@@ -1,5 +1,6 @@
 from typing import AnyStr, Dict
 import os
+from fastapi import HTTPException, status
 from jose import jwt, JWTError
 
 
@@ -25,5 +26,7 @@ class JWTProvider:
         try:
             return jwt.decode(token, self.secret, algorithms=[self.algorithm])
         except JWTError as e:
-            print(e)
-            return None
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Could not validate credentials. {str(e)}"
+            )

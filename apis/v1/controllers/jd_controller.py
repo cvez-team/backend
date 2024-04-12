@@ -8,6 +8,7 @@ from ..schemas.jd_schema import JDSchema
 from ..schemas.embedding_schema import VectorEmbeddingSchema
 from ..providers import llm
 from ..utils.prompt import system_prompt_jd
+from ..utils.extractor import get_jd_content
 
 
 def _validate_permission(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
@@ -118,6 +119,9 @@ def _upload_jd_content(content: AnyStr, position: PositionSchema):
     # Update position
     if not position.jd or position.jd == "":
         position.update_jd(jd_instance.id)
+
+    # Parse content
+    content = get_jd_content(content)
 
     # Analyse JD content
     _analyse_jd_content(content, jd_instance, position)

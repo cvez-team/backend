@@ -16,9 +16,9 @@ from ..utils.utils import validate_file_extension
 loop = asyncio.get_event_loop()
 
 
-def _validate_permission(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
+def _validate_permissions(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
     # Validate project id in user's projects
-    if project_id not in user.projects:
+    if project_id not in user.projects and project_id not in user.shared:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have permission to access this project."
@@ -51,7 +51,7 @@ def _validate_permission(project_id: AnyStr, position_id: AnyStr, user: UserSche
 
 
 def get_all_cvs(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
-    _, position = _validate_permission(project_id, position_id, user)
+    _, position = _validate_permissions(project_id, position_id, user)
 
     # Get CVs
     cvs = CVSchema.find_by_ids(position.cvs)
@@ -59,7 +59,7 @@ def get_all_cvs(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
 
 
 def get_cv_by_id(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, user: UserSchema):
-    _, _ = _validate_permission(project_id, position_id, user)
+    _, _ = _validate_permissions(project_id, position_id, user)
 
     # Get CV
     cv = CVSchema.find_by_id(cv_id)
@@ -152,7 +152,7 @@ async def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: 
 
 async def upload_cvs_data(project_id: AnyStr, position_id: AnyStr, user: UserSchema, cvs: list[UploadFile]):
     # Validate permission
-    _, position = _validate_permission(project_id, position_id, user)
+    _, position = _validate_permissions(project_id, position_id, user)
 
     # Validate criterias
     if len(position.criterias) == 0:
@@ -221,7 +221,7 @@ def get_upload_progress(watch_id: AnyStr):
 
 async def download_cv_content(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, user: UserSchema) -> bytes:
     # Validate permission
-    _, _ = _validate_permission(project_id, position_id, user)
+    _, _ = _validate_permissions(project_id, position_id, user)
 
     # Get CV
     cv = CVSchema.find_by_id(cv_id)
@@ -243,7 +243,7 @@ async def download_cv_content(project_id: AnyStr, position_id: AnyStr, cv_id: An
 
 def delete_current_cv(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, user: UserSchema):
     # Validate permission
-    _, position = _validate_permission(project_id, position_id, user)
+    _, position = _validate_permissions(project_id, position_id, user)
 
     # Get CV
     cv = CVSchema.find_by_id(cv_id)

@@ -1,3 +1,4 @@
+from ._cache_init import cacher
 from .cache_provider import CacheProvider
 from .jwt_provider import JWTProvider
 from .db_provider import DatabaseProvider
@@ -16,7 +17,6 @@ from .storage_provider import StorageProvider
 from .llm_provider import LLMProvider
 
 
-cacher = CacheProvider()
 memory_cacher = CacheProvider(in_memory=True)
 jwt = JWTProvider()
 user_db = DatabaseProvider(collection_name=USER_COLLECTION)

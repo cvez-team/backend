@@ -8,12 +8,11 @@ from ..schemas.criteria_schema import CriteriaSchema
 from ..providers import vector_db
 
 
-def get_all_positions_by_ids(project_id: AnyStr, user: UserSchema):
+def _validate_permissions(project_id: AnyStr, user: UserSchema):
     '''
-    Get all positions by the list of position ids.
+    Validate if user has access to the project.
     '''
-    # Check if user has access to the project
-    if project_id not in user.projects:
+    if project_id not in user.projects and project_id not in user.shared:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have access to this project."
@@ -26,6 +25,16 @@ def get_all_positions_by_ids(project_id: AnyStr, user: UserSchema):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found."
         )
+
+    return project
+
+
+def get_all_positions_by_ids(project_id: AnyStr, user: UserSchema):
+    '''
+    Get all positions by the list of position ids.
+    '''
+    # Validate if user has access to the project
+    project = _validate_permissions(project_id, user)
 
     # Get all positions by ids
     positions = PositionSchema.find_all_by_ids(project.positions)
@@ -37,20 +46,8 @@ def get_position_by_id(project_id: AnyStr, position_id: AnyStr, user: UserSchema
     '''
     Get position by id.
     '''
-    # Check if user has access to the project
-    if project_id not in user.projects:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have access to this project."
-        )
-
-    # Get project by id
-    project = ProjectSchema.find_by_id(project_id)
-    if not project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found."
-        )
+    # Validate if user has access to the project
+    project = _validate_permissions(project_id, user)
 
     # Check if position exists
     if position_id not in project.positions:
@@ -74,20 +71,8 @@ def create_new_position(project_id: AnyStr, data: BaseModel, user: UserSchema):
     '''
     Create a new position.
     '''
-    # Check if user has access to the project
-    if project_id not in user.projects:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have access to this project."
-        )
-
-    # Get project by id
-    project = ProjectSchema.find_by_id(project_id)
-    if not project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found."
-        )
+    # Validate if user has access to the project
+    project = _validate_permissions(project_id, user)
 
     # Create new position in database
     position = PositionSchema(
@@ -113,20 +98,8 @@ def update_current_position(project_id: AnyStr, position_id: AnyStr, data: BaseM
     '''
     Update current position.
     '''
-    # Check if user has access to the project
-    if project_id not in user.projects:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have access to this project."
-        )
-
-    # Get project by id
-    project = ProjectSchema.find_by_id(project_id)
-    if not project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found."
-        )
+    # Validate if user has access to the project
+    project = _validate_permissions(project_id, user)
 
     # Check if position exists
     if position_id not in project.positions:
@@ -151,20 +124,8 @@ def update_criteria_position(project_id: AnyStr, position_id: AnyStr, data: Base
     '''
     Update current position criteria.
     '''
-    # Check if user has access to the project
-    if project_id not in user.projects:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have access to this project."
-        )
-
-    # Get project by id
-    project = ProjectSchema.find_by_id(project_id)
-    if not project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found."
-        )
+    # Validate if user has access to the project
+    project = _validate_permissions(project_id, user)
 
     # Check if position exists
     if position_id not in project.positions:
@@ -190,20 +151,8 @@ def update_status_current_position(project_id: AnyStr, position_id: AnyStr, user
     '''
     Open or Close current position.
     '''
-    # Check if user has access to the project
-    if project_id not in user.projects:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have access to this project."
-        )
-
-    # Get project by id
-    project = ProjectSchema.find_by_id(project_id)
-    if not project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found."
-        )
+    # Validate if user has access to the project
+    project = _validate_permissions(project_id, user)
 
     # Check if position exists
     if position_id not in project.positions:
@@ -231,20 +180,8 @@ def delete_current_position(project_id: AnyStr, position_id: AnyStr, user: UserS
     '''
     Delete current position.
     '''
-    # Check if user has access to the project
-    if project_id not in user.projects:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have access to this project."
-        )
-
-    # Get project by id
-    project = ProjectSchema.find_by_id(project_id)
-    if not project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found."
-        )
+    # Validate if user has access to the project
+    project = _validate_permissions(project_id, user)
 
     # Check if position exists
     if position_id not in project.positions:
