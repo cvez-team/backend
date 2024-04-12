@@ -34,6 +34,7 @@ class CacheProvider:
         # Save cache to file
         with open(self.cache_path, "w") as _file:
             json.dump(self.cache, _file)
+            _file.close()
 
     def get(self, key: str) -> Any | None:
         # Get value from cache

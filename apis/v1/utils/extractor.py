@@ -1,5 +1,6 @@
 import os
 from fastapi import HTTPException, status
+from bs4 import BeautifulSoup
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 
 
@@ -36,3 +37,11 @@ def get_cv_content(filepath: str):
         content += "\n".join(_content) + "\n"
 
     return _content
+
+
+def get_jd_content(html_content: str):
+    '''
+    Get the content of the job description.
+    '''
+    soup = BeautifulSoup(html_content, 'html.parser')
+    return soup.get_text()

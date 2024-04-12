@@ -1,7 +1,7 @@
 from typing import Any, AnyStr, Dict, List
 import time
 from firebase_admin import firestore
-from .cache_provider import CacheProvider
+from ._cache_init import cacher
 from ..configs.firebase_config import db
 from ..utils.logger import log_firebase
 
@@ -15,7 +15,7 @@ class DatabaseProvider:
         self.collection_name = collection_name
         self.id_field = "id"
         self.collection = db.collection(collection_name)
-        self.cacher = CacheProvider()
+        self.cacher = cacher
 
     def get_all(self) -> List[Dict[str, Any]]:
         '''
