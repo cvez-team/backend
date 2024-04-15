@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from .score_schema import ScoreSchema, ScoreModel
 from ..providers import cv_db
 from ..providers import storage_db
+from ..utils.utils import get_current_time
 
 
 class CVModel(BaseModel):
@@ -13,6 +14,7 @@ class CVModel(BaseModel):
     score: ScoreModel = Field({}, title="CV Score")
     extraction: dict = Field({}, title="CV Extraction")
     summary: str = Field("", title="CV Summary")
+    upload_at: str = Field("", title="CV Upload At")
 
 
 class CVSchema:
@@ -28,7 +30,8 @@ class CVSchema:
         url: AnyStr = "",
         score: ScoreSchema = ScoreSchema(),
         extraction: Dict[str, AnyStr] = {},
-        summary: AnyStr = ""
+        summary: AnyStr = "",
+        upload_at: AnyStr = get_current_time()
     ):
         self.id = cv_id
         self.name = name
@@ -37,6 +40,7 @@ class CVSchema:
         self.score = score
         self.extraction = extraction
         self.summary = summary
+        self.upload_at = upload_at
 
     def to_dict(self, include_id=True):
         data_dict = {
@@ -45,7 +49,8 @@ class CVSchema:
             "url": self.url,
             "score": self.score.to_dict(),
             "extraction": self.extraction,
-            "summary": self.summary
+            "summary": self.summary,
+            "upload_at": self.upload_at
         }
         if include_id:
             data_dict["id"] = self.id
@@ -61,6 +66,7 @@ class CVSchema:
             score=ScoreSchema.from_dict(data.get("score")),
             extraction=data.get("extraction"),
             summary=data.get("summary"),
+            upload_at=data.get("upload_at")
         )
 
     @staticmethod

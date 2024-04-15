@@ -10,7 +10,7 @@ from ..schemas.embedding_schema import VectorEmbeddingSchema
 from ..providers import memory_cacher, storage_db, llm
 from ..utils.extractor import get_cv_content
 from ..utils.prompt import system_prompt_cv
-from ..utils.utils import validate_file_extension
+from ..utils.utils import validate_file_extension, get_content_type
 
 
 loop = asyncio.get_event_loop()
@@ -73,7 +73,9 @@ def get_cv_by_id(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, user: U
 
 
 async def _upload_cv_data(data: bytes, filename: AnyStr, watch_id: AnyStr, cv: CVSchema):
-    path, url = storage_db.upload(data, filename)
+    # Get content type of file
+    content_type = get_content_type(filename)
+    path, url = storage_db.upload(data, filename, content_type)
     memory_cacher.get(watch_id)["percent"][filename] += 15
     cv.update_path_url(path, url)
     memory_cacher.get(watch_id)["percent"][filename] += 5
