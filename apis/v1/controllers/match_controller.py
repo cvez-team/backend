@@ -66,6 +66,8 @@ def get_all_matches_cv(project_id: AnyStr, position_id: AnyStr, user: UserSchema
         )
 
         formated_records = []
+        if len(vectors.vectors) == 0:
+            continue
         gap = 100 / len(vectors.vectors)
 
         for i, _records in enumerate(records):

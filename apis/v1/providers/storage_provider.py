@@ -21,7 +21,7 @@ class StorageProvider:
         filename = f"{file_base_name}_{uuid.uuid4().hex[:5]}.{file_extension}"
         return f"{self.directory}/{filename}"
 
-    def upload(self, file: bytes, filename: str) -> tuple[str, str]:
+    def upload(self, file: bytes, filename: str, content_type: str) -> tuple[str, str]:
         '''
         Upload the file to the storage.
         Return the file path and the public URL of the file.
@@ -34,18 +34,7 @@ class StorageProvider:
 
         log_firebase(f"Storage upload to {path} [{_e:.2f}s]")
 
-        blob.upload_from_string(file)
-        blob.make_public()
-        return path, blob.public_url
-
-    async def async_upload(self, file: bytes, filename: str) -> tuple[str, str]:
-        '''
-        Upload the file to the storage asynchronously.
-        Return the file path and the public URL of the file.
-        '''
-        path = self.__get_ref(filename.replace(" ", "_"))
-        blob = bucket.blob(path)
-        await blob.upload_from_string(file)
+        blob.upload_from_string(file, content_type)
         blob.make_public()
         return path, blob.public_url
 
