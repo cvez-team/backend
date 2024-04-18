@@ -5,6 +5,7 @@ from ..schemas.user_schema import UserSchema
 from ..schemas.project_schema import ProjectSchema
 from ..schemas.position_schema import PositionSchema
 from ..schemas.criteria_schema import CriteriaSchema
+from ..schemas.jd_schema import JDSchema
 from ..providers import vector_db
 
 
@@ -63,6 +64,37 @@ def get_position_by_id(project_id: AnyStr, position_id: AnyStr, user: UserSchema
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Position not found."
         )
+
+    return position
+
+
+def get_public_position_by_id(position_id: AnyStr):
+    '''
+    Get public position by id.
+    '''
+    # Get position by id
+    position = PositionSchema.find_by_id(position_id)
+    if not position:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Position not found."
+        )
+
+    # Get JD Data
+    if not position.jd or position.jd == "":
+        jd_instance = JDSchema().create_jd()
+        # Update position
+        position.update_jd(jd_instance.id)
+    else:
+        jd_instance = JDSchema.find_by_id(position.jd)
+        if not jd_instance:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="JD not found."
+            )
+
+    # Assign JD to position
+    position.jd = jd_instance
 
     return position
 

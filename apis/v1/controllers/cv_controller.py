@@ -213,6 +213,12 @@ async def upload_cv_data(position_id: AnyStr, cv: UploadFile):
     # Create watch id
     watch_id = str(uuid.uuid4())
 
+    # Initialize cache
+    memory_cacher.set(watch_id, {
+        "percent": {},
+        "analyzed": {}
+    })
+
     await _upload_cvs_data([file_content], [cv.filename], watch_id, position)
     return watch_id
 

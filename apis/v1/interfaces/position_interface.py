@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from ..schemas.position_schema import PositionModel
+from ..schemas.position_schema import PositionModel, PositionMinimalModel
 
 
 class PositionsResponseInterface(BaseModel):
@@ -31,3 +31,8 @@ class UpdatePositionInterface(BaseModel):
 
 class UpdateCriteriaInterface(BaseModel):
     criterias: list[dict] = Field(None, title="Position Criterias")
+
+
+class PublicPositionInterface(BaseModel):
+    msg: str = Field(..., title="Response Message")
+    data: PositionMinimalModel = Field(None, title="Position")

@@ -6,12 +6,14 @@ from ..interfaces.position_interface import (
     UpdatePositionInterface,
     PositionsResponseInterface,
     PositionResponseInterface,
-    UpdateCriteriaInterface
+    UpdateCriteriaInterface,
+    PublicPositionInterface
 )
 from ..middlewares.auth_middleware import get_current_user
 from ..controllers.position_controller import (
     get_all_positions_by_ids,
     get_position_by_id,
+    get_public_position_by_id,
     create_new_position,
     update_current_position,
     update_status_current_position,
@@ -27,6 +29,12 @@ router = APIRouter(prefix="/position", tags=["Position"])
 async def get_positions(project_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
     positions = get_all_positions_by_ids(project_id, user)
     return jsonResponseFmt([position.to_dict() for position in positions], "Get positions successfully")
+
+
+@router.get("/public/{position_id}", response_model=PublicPositionInterface)
+async def get_public_position(position_id: str):
+    position = get_public_position_by_id(position_id)
+    return jsonResponseFmt(position.to_dict(minimal=True), f"Get public position with id {position_id} successfully")
 
 
 @router.get("/{project_id}/{position_id}", response_model=PositionResponseInterface)
@@ -55,13 +63,15 @@ async def update_position_criteria(project_id: str, position_id: str, data: Upda
 
 @router.put("/{project_id}/close/{position_id}", response_model=PositionResponseInterface)
 async def close_position(project_id: str, position_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
-    update_status_current_position(project_id, position_id, user, is_closed=True)
+    update_status_current_position(
+        project_id, position_id, user, is_closed=True)
     return jsonResponseFmt(None, f"Close position with id {position_id} successfully")
 
 
 @router.put("/{project_id}/open/{position_id}", response_model=PositionResponseInterface)
 async def open_position(project_id: str, position_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
-    update_status_current_position(project_id, position_id, user, is_closed=False)
+    update_status_current_position(
+        project_id, position_id, user, is_closed=False)
     return jsonResponseFmt(None, f"Open position with id {position_id} successfully")
 
 
