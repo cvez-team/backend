@@ -1,4 +1,4 @@
-from typing import AnyStr, List, Dict
+from typing import AnyStr, Dict
 from pydantic import BaseModel, Field
 from ..providers import jd_db
 
@@ -24,11 +24,12 @@ class JDSchema:
         self.content = content
         self.extraction = extraction
 
-    def to_dict(self, include_id=True):
+    def to_dict(self, include_id=True, minimal=False):
         data_dict = {
-            "content": self.content,
-            "extraction": self.extraction
+            "content": self.content
         }
+        if not minimal:
+            data_dict["extraction"] = self.extraction
         if include_id:
             data_dict["id"] = self.id
         return data_dict
@@ -64,3 +65,6 @@ class JDSchema:
         jd_db.update(self.id, {
             "content": content
         })
+
+    def delete_jd(self):
+        jd_db.delete(self.id)

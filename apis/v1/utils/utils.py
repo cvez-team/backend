@@ -10,7 +10,7 @@ def get_current_time() -> str:
     '''
     Get the current time in the string format.
     '''
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.datetime.now().isoformat()
 
 
 def create_pydantic_object(criterias: List[CriteriaSchema]):

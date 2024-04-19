@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from ..schemas.user_schema import UserSchema
 from ..middlewares.guard_middleware import user_guard_middleware, GuardCondition
+from ..middlewares.password_middleware import password_middleware
 from ..controllers.utils_controller import clear_cache_control
 from ..utils.response_fmt import jsonResponseFmt
 
@@ -14,12 +14,10 @@ admin_guard = GuardCondition(
 )
 
 
-@router.delete("/reset")
-async def reset_cache(
-    user: Annotated[UserSchema, Depends(user_guard_middleware(admin_guard))]
-):
+@router.delete("/reset", dependencies=[Depends(password_middleware)])
+async def reset_cache():
     '''
     Reset cache.
     '''
-    clear_cache_control(user)
+    clear_cache_control()
     return jsonResponseFmt(None, "Cache cleared.")

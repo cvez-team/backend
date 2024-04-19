@@ -10,7 +10,7 @@ from ..schemas.embedding_schema import VectorEmbeddingSchema
 
 def _validate_permission(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
     # Check project_id and position_id in user's projects
-    if project_id not in user.projects:
+    if project_id not in user.projects and project_id not in user.shared:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User does not have permission to access this project"

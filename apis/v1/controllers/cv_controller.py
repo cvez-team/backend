@@ -1,7 +1,7 @@
 from typing import AnyStr
-from fastapi import UploadFile, HTTPException, status
+from fastapi import UploadFile, HTTPException, status, BackgroundTasks
 import uuid
-import asyncio
+import time
 from ..schemas.user_schema import UserSchema
 from ..schemas.cv_schema import CVSchema
 from ..schemas.project_schema import ProjectSchema
@@ -11,9 +11,6 @@ from ..providers import memory_cacher, storage_db, llm
 from ..utils.extractor import get_cv_content
 from ..utils.prompt import system_prompt_cv
 from ..utils.utils import validate_file_extension, get_content_type
-
-
-loop = asyncio.get_event_loop()
 
 
 def _validate_permissions(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
@@ -72,7 +69,7 @@ def get_cv_by_id(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, user: U
     return cv
 
 
-async def _upload_cv_data(data: bytes, filename: AnyStr, watch_id: AnyStr, cv: CVSchema):
+def _upload_cv_data(data: bytes, filename: AnyStr, watch_id: AnyStr, cv: CVSchema):
     # Get content type of file
     content_type = get_content_type(filename)
     path, url = storage_db.upload(data, filename, content_type)
@@ -81,11 +78,11 @@ async def _upload_cv_data(data: bytes, filename: AnyStr, watch_id: AnyStr, cv: C
     memory_cacher.get(watch_id)["percent"][filename] += 5
 
 
-async def _analyze_cv_data(content: AnyStr, watch_id: AnyStr, filename: AnyStr, cv: CVSchema, position: PositionSchema):
+def _analyze_cv_data(content: AnyStr, watch_id: AnyStr, filename: AnyStr, cv: CVSchema, position: PositionSchema):
     # Generate content
     generator = llm.construct(position.criterias)
     extraction = generator.generate(system_prompt_cv, content)
-    memory_cacher.get(watch_id)["percent"][filename] += 20
+    memory_cacher.get(watch_id)["percent"][filename] += 30
 
     # Update extraction
     cv.update_extraction(extraction)
@@ -110,11 +107,10 @@ async def _analyze_cv_data(content: AnyStr, watch_id: AnyStr, filename: AnyStr, 
                 })
                 values.append(keyword)
             vectors = VectorEmbeddingSchema.from_documents(values, payloads)
-            memory_cacher.get(watch_id)["percent"][filename] += 20
 
             # Upload to vector database
             vectors.upload(position.id, f"cv_{key}")
-            memory_cacher.get(watch_id)["percent"][filename] += 15
+        memory_cacher.get(watch_id)["percent"][filename] += 25
 
     except Exception as e:
         raise HTTPException(
@@ -123,7 +119,7 @@ async def _analyze_cv_data(content: AnyStr, watch_id: AnyStr, filename: AnyStr, 
         )
 
 
-async def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: AnyStr, position: PositionSchema):
+def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: AnyStr, position: PositionSchema):
     for cv, filename in zip(cvs, filenames):
         memory_cacher.get(watch_id)["percent"][filename] = 0
 
@@ -138,7 +134,7 @@ async def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: 
         memory_cacher.get(watch_id)["percent"][filename] += 5
 
         # Upload to storage
-        await _upload_cv_data(
+        _upload_cv_data(
             cv, filename, watch_id, cv_instance)
 
         # Save file to cache folder
@@ -148,11 +144,17 @@ async def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: 
         memory_cacher.get(watch_id)["percent"][filename] += 5
 
         # Analyze CV
-        await _analyze_cv_data(cv_content, watch_id, filename,
-                               cv_instance, position)
+        _analyze_cv_data(cv_content, watch_id, filename,
+                         cv_instance, position)
+
+    # Wait for 5 second to remove watch id
+    time.sleep(5)
+
+    # Delete cache file
+    memory_cacher.remove(watch_id)
 
 
-async def upload_cvs_data(project_id: AnyStr, position_id: AnyStr, user: UserSchema, cvs: list[UploadFile]):
+async def upload_cvs_data(project_id: AnyStr, position_id: AnyStr, user: UserSchema, cvs: list[UploadFile], bg_tasks: BackgroundTasks):
     # Validate permission
     _, position = _validate_permissions(project_id, position_id, user)
 
@@ -181,14 +183,12 @@ async def upload_cvs_data(project_id: AnyStr, position_id: AnyStr, user: UserSch
     })
 
     # Upload CVs
-    _coroutine = _upload_cvs_data(files, filenames, watch_id, position)
-    _task = asyncio.create_task(_coroutine)
-    _task.add_done_callback(lambda _: memory_cacher.remove(watch_id))
+    bg_tasks.add_task(_upload_cvs_data, files, filenames, watch_id, position)
 
     return watch_id
 
 
-async def upload_cv_data(position_id: AnyStr, cv: UploadFile):
+async def upload_cv_data(position_id: AnyStr, cv: UploadFile, bg_tasks: BackgroundTasks):
     # Validate extension
     validate_file_extension(cv.filename)
 
@@ -198,6 +198,12 @@ async def upload_cv_data(position_id: AnyStr, cv: UploadFile):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Position not found."
+        )
+
+    if position.is_closed:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Position is closed."
         )
 
     # Validate criterias
@@ -213,7 +219,16 @@ async def upload_cv_data(position_id: AnyStr, cv: UploadFile):
     # Create watch id
     watch_id = str(uuid.uuid4())
 
-    await _upload_cvs_data([file_content], [cv.filename], watch_id, position)
+    # Initialize cache
+    memory_cacher.set(watch_id, {
+        "percent": {},
+        "analyzed": {}
+    })
+
+    # Upload CV
+    bg_tasks.add_task(_upload_cv_data, [file_content], [
+                      cv.filename], watch_id, position)
+
     return watch_id
 
 
@@ -243,6 +258,13 @@ async def download_cv_content(project_id: AnyStr, position_id: AnyStr, cv_id: An
     return cv_content
 
 
+def delete_cvs_by_ids(cv_ids: list[AnyStr]):
+    for cv_id in cv_ids:
+        cv = CVSchema.find_by_id(cv_id)
+        if cv:
+            cv.delete_cv()
+
+
 def delete_current_cv(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, user: UserSchema):
     # Validate permission
     _, position = _validate_permissions(project_id, position_id, user)
@@ -258,12 +280,12 @@ def delete_current_cv(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, us
     # Remove CV from position
     position.update_cv(cv_id, is_add=False)
 
-    # Delete CV
-    cv.delete_cv()
-
     # Delete vectors
     VectorEmbeddingSchema.from_query(
         collection=position_id,
         key="id",
         value=cv_id
     ).delete(position_id)
+
+    # Delete CV
+    cv.delete_cv()

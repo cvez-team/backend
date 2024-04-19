@@ -13,7 +13,7 @@ from ..utils.extractor import get_jd_content
 
 def _validate_permission(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
     # Validate project id in user's projects
-    if project_id not in user.projects:
+    if project_id not in user.projects and project_id not in user.shared:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have permission to access this project."
