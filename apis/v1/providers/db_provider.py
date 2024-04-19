@@ -83,6 +83,9 @@ class DatabaseProvider:
         Get a document from the collection.
         Return the document if it exists, otherwise return None.
         '''
+        if doc_id is None or doc_id == "":
+            return None
+
         # Get from cache
         doc = self.cacher.get(f"{self.collection_name}:{doc_id}")
 

@@ -6,6 +6,7 @@ from ..schemas.project_schema import ProjectSchema
 from ..schemas.position_schema import PositionSchema
 from ..schemas.criteria_schema import CriteriaSchema
 from ..schemas.jd_schema import JDSchema
+from ..controllers.cv_controller import delete_cvs_by_ids
 from ..providers import vector_db
 
 
@@ -208,6 +209,24 @@ def update_status_current_position(project_id: AnyStr, position_id: AnyStr, user
         position.open_position()
 
 
+def delete_positions_by_ids(position_ids: list[AnyStr]):
+    # Iterate over all positions id
+    for position_id in position_ids:
+        # Find position by id
+        position = PositionSchema.find_by_id(position_id)
+        if position:
+            # Delete position
+            position.delete_position()
+            # Delete vector database collection
+            vector_db.delete_collection(position_id)
+            # Delete JD by Id
+            jd_instance = JDSchema.find_by_id(position.jd)
+            if jd_instance:
+                jd_instance.delete_jd()
+            # Delete CVs by Ids
+            delete_cvs_by_ids(position.cvs)
+
+
 def delete_current_position(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
     '''
     Delete current position.
@@ -230,7 +249,19 @@ def delete_current_position(project_id: AnyStr, position_id: AnyStr, user: UserS
             detail="Position not found."
         )
 
-    # Update position of project in database
+    # Delete postion from database
     position.delete_position()
+
+    # Update position of project in database
     project.update_positions(position_id, is_add=False)
+
+    # Delete vector database collection
     vector_db.delete_collection(position_id)
+
+    # Delete JD by Id
+    jd_instance = JDSchema.find_by_id(position.jd)
+    if jd_instance:
+        jd_instance.delete_jd()
+
+    # Delete CVs by Ids
+    delete_cvs_by_ids(position.cvs)

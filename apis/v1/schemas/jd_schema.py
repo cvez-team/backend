@@ -65,3 +65,6 @@ class JDSchema:
         jd_db.update(self.id, {
             "content": content
         })
+
+    def delete_jd(self):
+        jd_db.delete(self.id)

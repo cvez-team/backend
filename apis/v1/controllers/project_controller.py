@@ -2,10 +2,10 @@ from typing import AnyStr, Dict
 from pydantic import BaseModel
 from fastapi import HTTPException, status
 from .user_controller import get_all_users_by_ids
+from .position_controller import delete_positions_by_ids
 from ..interfaces.project_interface import TypeGetAllProjects
 from ..schemas.user_schema import UserSchema
 from ..schemas.project_schema import ProjectSchema
-
 
 
 def get_all_projects_by_ids(user: UserSchema, get_type: TypeGetAllProjects):
@@ -93,6 +93,9 @@ def get_project_by_id(project_id: AnyStr, use_alias: bool, user: UserSchema):
                 detail="Project not found",
             )
 
+    # Fetch member data
+    project.members = get_all_users_by_ids(project.members, user)
+
     return project
 
 
@@ -136,7 +139,7 @@ def update_current_project(project_id: AnyStr, data: BaseModel, user: UserSchema
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found."
         )
-    
+
     # Update project in database
     project.update_project(data=data.model_dump(exclude_defaults=True))
 
@@ -152,7 +155,7 @@ def update_member_project(project_id: AnyStr, data: BaseModel, user: UserSchema)
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have access to this project."
         )
-    
+
     # Get project by id
     project = ProjectSchema.find_by_id(project_id)
     if not project:
@@ -168,9 +171,12 @@ def update_member_project(project_id: AnyStr, data: BaseModel, user: UserSchema)
     for member_id in data.members:
         # Get user by id
         member = UserSchema.find_by_id(member_id)
-        member.update_user_projects(project.id, is_add=data.is_add, key="shared")
+        member.update_user_projects(
+            project.id, is_add=data.is_add, key="shared")
 
 # Delete project
+
+
 def delete_current_project(project_id: AnyStr, user: UserSchema, is_purge: bool = False):
     '''
     Delete current project.
@@ -196,10 +202,13 @@ def delete_current_project(project_id: AnyStr, user: UserSchema, is_purge: bool 
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found."
         )
-    
+
     if is_purge:
         # Purge project in database
         project.delete_project()
+        # Delete position by Ids
+        delete_positions_by_ids(project.positions)
+        # Update user in database
         user.update_user_projects(project.id, is_add=False, key="trash")
     else:
         # Update user in database
@@ -226,7 +235,7 @@ def restore_current_project(project_id: AnyStr, user: UserSchema):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found."
         )
-    
+
     # Update user in database
     user.update_user_projects(project.id, is_add=True, key="projects")
     user.update_user_projects(project.id, is_add=False, key="trash")

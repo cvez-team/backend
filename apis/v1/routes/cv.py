@@ -1,6 +1,6 @@
 from typing import Annotated
 from io import BytesIO
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from ..schemas.user_schema import UserSchema
 from ..interfaces.cv_interface import (
@@ -43,18 +43,20 @@ async def upload_cvs(
     project_id: str,
     position_id: str,
     user: Annotated[UserSchema, Depends(get_current_user)],
-    cvs: Annotated[UploadCVInterface.cvs, UploadCVInterface.cv_default]
+    cvs: Annotated[UploadCVInterface.cvs, UploadCVInterface.cv_default],
+    bg_tasks: BackgroundTasks,
 ):
-    upload_id = await upload_cvs_data(project_id, position_id, user, cvs)
+    upload_id = await upload_cvs_data(project_id, position_id, user, cvs, bg_tasks)
     return jsonResponseFmt({"progress_id": upload_id})
 
 
 @router.post("/{position_id}/upload", response_model=CVResponseInterface)
 async def upload_cv(
     position_id: str,
-    cv: Annotated[UploadCVInterface.cv, UploadCVInterface.cv_default]
+    cv: Annotated[UploadCVInterface.cv, UploadCVInterface.cv_default],
+    bg_tasks: BackgroundTasks
 ):
-    await upload_cv_data(position_id, cv)
+    await upload_cv_data(position_id, cv, bg_tasks)
     return jsonResponseFmt(None, "CV uploaded successfully")
 
 
