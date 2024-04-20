@@ -164,19 +164,36 @@ def update_member_project(project_id: AnyStr, data: BaseModel, user: UserSchema)
             detail="Project not found."
         )
 
-    # Update project in database
-    project.update_members(data.members, is_add=data.is_add)
+    if data.is_add:
+        # Update project in database
+        project.update_members(data.members, is_add=data.is_add)
 
-    # Iterate through members and update user in database
-    for member_id in data.members:
-        # Get user by id
-        member = UserSchema.find_by_id(member_id)
-        member.update_user_projects(
-            project.id, is_add=data.is_add, key="shared")
+        # Iterate through members and update user in database
+        for member_id in data.members:
+            # Get user by id
+            member = UserSchema.find_by_id(member_id)
+            if not member:
+                continue
+            if project.id not in member.shared:
+                member.update_user_projects(
+                    project.id, is_add=data.is_add, key="shared")
+
+    else:
+        # Iterate through members and update user in database
+        for member_id in data.members:
+            # Get user by id
+            member = UserSchema.find_by_id(member_id)
+            if not member:
+                continue
+            if project.id in member.shared:
+                member.update_user_projects(
+                    project.id, is_add=data.is_add, key="shared")
+
+        # Update project in database
+        project.update_members(data.members, is_add=data.is_add)
+
 
 # Delete project
-
-
 def delete_current_project(project_id: AnyStr, user: UserSchema, is_purge: bool = False):
     '''
     Delete current project.
