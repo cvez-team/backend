@@ -21,6 +21,9 @@ class VectorEmbeddingSchema:
         self.payloads = payloads
         self.provider = provider
 
+    def __iter__(self):
+        return zip(self.ids, self.vectors, self.documents, self.payloads)
+
     @staticmethod
     def from_documents(documents: List[AnyStr], payloads: List[Dict], provider: AnyStr = DEFAULT_EMBEDDING_PROVIDER):
         vectors = embedder.embed(documents, provider)

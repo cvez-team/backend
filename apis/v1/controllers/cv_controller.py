@@ -7,6 +7,7 @@ from ..schemas.cv_schema import CVSchema
 from ..schemas.project_schema import ProjectSchema
 from ..schemas.position_schema import PositionSchema
 from ..schemas.embedding_schema import VectorEmbeddingSchema
+from ..schemas.criteria_schema import CriteriaSchema
 from ..providers import memory_cacher, storage_db, llm
 from ..utils.extractor import get_cv_content
 from ..utils.prompt import system_prompt_cv
@@ -78,15 +79,39 @@ def _upload_cv_data(data: bytes, filename: AnyStr, watch_id: AnyStr, cv: CVSchem
     memory_cacher.get(watch_id)["percent"][filename] += 5
 
 
+def _validate_llm_extraction(extraction: dict, criterias: list[CriteriaSchema]) -> dict:
+    '''
+    Sometimes, the extraction from LLM model may contain unwanted keywords.\n
+    This function will filter out the unwanted keywords from the extraction.
+    '''
+    # Get criteria names
+    criteria_names = [criteria.name for criteria in criterias]
+
+    # If there is a field `properties` in the extraction, extract the keywords from it
+    if "properties" in extraction:
+        if isinstance(extraction["properties"], dict):
+            for key, value in extraction["properties"].items():
+                if key in criteria_names:
+                    extraction[key] = value
+
+    # Filter out unwanted keywords
+    filtered_extraction = {}
+    for key, value in extraction.items():
+        if key in criteria_names:
+            filtered_extraction[key] = value
+
+    return filtered_extraction
+
+
 def _analyze_cv_data(content: AnyStr, watch_id: AnyStr, filename: AnyStr, cv: CVSchema, position: PositionSchema):
     # Generate content
     generator = llm.construct(position.criterias)
     extraction = generator.generate(system_prompt_cv, content)
+    extraction = _validate_llm_extraction(extraction, position.criterias)
     memory_cacher.get(watch_id)["percent"][filename] += 30
 
     # Update extraction
     cv.update_extraction(extraction)
-    memory_cacher.get(watch_id)["analyzed"][filename] = True
     memory_cacher.get(watch_id)["percent"][filename] += 5
 
     # Extract keywords
@@ -129,13 +154,13 @@ def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: AnyStr
         ).create_cv()
         memory_cacher.get(watch_id)["percent"][filename] += 10
 
-        # Update to position
-        position.update_cv(cv_instance.id, is_add=True)
-        memory_cacher.get(watch_id)["percent"][filename] += 5
-
         # Upload to storage
-        _upload_cv_data(
-            cv, filename, watch_id, cv_instance)
+        try:
+            _upload_cv_data(
+                cv, filename, watch_id, cv_instance)
+        except Exception as e:
+            memory_cacher.get(watch_id)["error"][filename] = str(e)
+            continue
 
         # Save file to cache folder
         cache_file_path = memory_cacher.save_cache_file(cv, filename)
@@ -144,11 +169,19 @@ def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: AnyStr
         memory_cacher.get(watch_id)["percent"][filename] += 5
 
         # Analyze CV
-        _analyze_cv_data(cv_content, watch_id, filename,
-                         cv_instance, position)
+        try:
+            _analyze_cv_data(cv_content, watch_id, filename,
+                             cv_instance, position)
+        except Exception as e:
+            memory_cacher.get(watch_id)["error"][filename] = str(e)
+            continue
 
-    # Wait for 5 second to remove watch id
-    time.sleep(5)
+        # Update to position
+        position.update_cv(cv_instance.id, is_add=True)
+        memory_cacher.get(watch_id)["percent"][filename] += 5
+
+    # Wait for 10 second to remove watch id
+    time.sleep(10)
 
     # Delete cache file
     memory_cacher.remove(watch_id)
@@ -179,7 +212,7 @@ async def upload_cvs_data(project_id: AnyStr, position_id: AnyStr, user: UserSch
     # Initialize cache
     memory_cacher.set(watch_id, {
         "percent": {},
-        "analyzed": {}
+        "error": {}
     })
 
     # Upload CVs
@@ -222,7 +255,7 @@ async def upload_cv_data(position_id: AnyStr, cv: UploadFile, bg_tasks: Backgrou
     # Initialize cache
     memory_cacher.set(watch_id, {
         "percent": {},
-        "analyzed": {}
+        "error": {}
     })
 
     # Upload CV

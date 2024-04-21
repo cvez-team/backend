@@ -26,7 +26,7 @@ class CVUploadResponseInterface(BaseModel):
 
 class _CVUploadProgressInterface(BaseModel):
     percent: Dict[str, int] = Field(..., description="Upload percentage")
-    analyzed: Dict[str, bool] = Field(..., description="Analyzed status")
+    error: Dict[str, str] = Field(..., description="Error status")
 
 
 class CVUploadProgressInterface(BaseModel):

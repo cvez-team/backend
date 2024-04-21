@@ -153,33 +153,6 @@ def update_current_position(project_id: AnyStr, position_id: AnyStr, data: BaseM
     position.update_position(data=data.model_dump(exclude_defaults=True))
 
 
-def update_criteria_position(project_id: AnyStr, position_id: AnyStr, data: BaseModel, user: UserSchema):
-    '''
-    Update current position criteria.
-    '''
-    # Validate if user has access to the project
-    project = _validate_permissions(project_id, user)
-
-    # Check if position exists
-    if position_id not in project.positions:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Position not found."
-        )
-
-    # Get position by id
-    position = PositionSchema.find_by_id(position_id)
-    if not position:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Position not found."
-        )
-
-    # Create new criteria in database
-    for criteria in data.criterias:
-        CriteriaSchema.from_dict(criteria)
-
-
 def update_status_current_position(project_id: AnyStr, position_id: AnyStr, user: UserSchema, is_closed: bool):
     '''
     Open or Close current position.
