@@ -108,8 +108,9 @@ class UserSchema:
 
     def update_user_projects(self, project_id: AnyStr, is_add: bool, key: AnyStr = "projects"):
         if is_add:
-            setattr(self, key, [*getattr(self, key), project_id])
+            setattr(self, key, list(
+                set(getattr(self, key)) | set([project_id])))
         else:
-            setattr(self, key, [project for project in getattr(
-                self, key) if project != project_id])
+            setattr(self, key, list(
+                set(getattr(self, key)) - set([project_id])))
         user_db.update(self.id, {f"{key}": getattr(self, key)})

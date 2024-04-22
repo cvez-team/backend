@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from ..interfaces.match_interface import (
     MatchesResponseInterface
 )
@@ -16,8 +16,9 @@ router = APIRouter(prefix="/match", tags=["Match"])
 
 
 @router.get("/match_cv_jd/{project_id}/{position_id}", response_model=MatchesResponseInterface)
-async def get_matches_cv(project_id: str, position_id: str, user: Annotated[UserSchema, Depends(get_current_user)]):
-    matches = get_all_matches_cv(project_id, position_id, user)
+async def get_matches_cv(project_id: str, position_id: str, user: Annotated[UserSchema, Depends(get_current_user)], bg_tasks: BackgroundTasks, limit: int = 20, threshold: float = 0.6):
+    matches = get_all_matches_cv(
+        project_id, position_id, limit, threshold, user, bg_tasks)
     return jsonResponseFmt(matches)
 
 

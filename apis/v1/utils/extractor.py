@@ -24,7 +24,7 @@ def _load_pdf_docx(filepath: str):
     return loader.load_and_split()
 
 
-def get_cv_content(filepath: str):
+def get_cv_content(filepath: str) -> str:
     '''
     Get the content of the CV file. Weathers it is a PDF or DOCX file.
     '''
@@ -36,7 +36,7 @@ def get_cv_content(filepath: str):
                     for line in _data.page_content.splitlines() if line.strip() != ""]
         content += "\n".join(_content) + "\n"
 
-    return _content
+    return content
 
 
 def get_jd_content(html_content: str):

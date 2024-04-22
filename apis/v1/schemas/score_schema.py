@@ -3,13 +3,13 @@ from pydantic import BaseModel, Field
 
 
 class ScoreModel(BaseModel):
-    overall: float = Field(0.0, title="Overall Score")
+    overall: float = Field(None, title="Overall Score")
 
 
 class ScoreSchema:
     def __init__(
         self,
-        overall: float = 0.0,
+        overall: float = None,
         **kwargs,
     ):
         self.overall = overall

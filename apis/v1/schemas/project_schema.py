@@ -107,7 +107,7 @@ class ProjectSchema:
 
     def update_members(self, members: List[AnyStr], is_add: bool = True):
         if is_add:
-            self.members.extend(members)
+            self.members = list(set(self.members) | set(members))
         else:
             self.members = list(set(self.members) - set(members))
         # Add data to cache

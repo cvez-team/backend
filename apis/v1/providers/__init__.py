@@ -15,6 +15,7 @@ from ..utils.constants import (
 )
 from .storage_provider import StorageProvider
 from .llm_provider import LLMProvider
+from .algorithm_provider import AlgorithmProvider
 
 
 memory_cacher = CacheProvider(in_memory=True)
