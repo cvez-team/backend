@@ -8,10 +8,6 @@ from ..schemas.embedding_schema import VectorEmbeddingSchema
 from ..providers.algorithm_provider import AlgorithmProvider, FormattedOutput
 
 
-QUERY_LIMIT = 20
-THRESHOLD = 0.6
-
-
 def _validate_permission(project_id: AnyStr, position_id: AnyStr, user: UserSchema):
     # Check project_id and position_id in user's projects
     if project_id not in user.projects and project_id not in user.shared:

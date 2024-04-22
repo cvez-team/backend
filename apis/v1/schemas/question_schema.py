@@ -2,9 +2,16 @@ from typing import AnyStr, Dict
 from pydantic import BaseModel, Field
 
 
+class _QuestionAnswerModel(BaseModel):
+    a: str = Field("", title="Answer A")
+    b: str = Field("", title="Answer B")
+    c: str = Field("", title="Answer C")
+    d: str = Field("", title="Answer D")
+
+
 class QuestionModel(BaseModel):
     content: str = Field("", title="Question Content")
-    answer: str = Field("", title="Question Answer")
+    answer: _QuestionAnswerModel = Field("", title="Question Answer")
     level: int = Field(0, title="Question Level")
 
 
@@ -16,7 +23,7 @@ class QuestionSchema:
     def __init__(
         self,
         content: AnyStr = "",
-        answer: AnyStr = "",
+        answer: Dict[str, str] = {},
         level: int = 0,
     ):
         self.content = content
