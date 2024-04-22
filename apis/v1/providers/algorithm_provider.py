@@ -77,6 +77,13 @@ class AlgorithmProvider:
             "detail": {}
         }
 
+        # If length of CV IDs is 0, return empty output
+        if len(cv_ids) == 0:
+            return fmt_output
+        # If length of JD keywords is 0, return empty output
+        if len(jd_keywords) == 0:
+            return fmt_output
+
         # Create a placeholder matrix for the scores.
         # The matrix has shape (i, q, k)
         # where i is the number of keywords in the JD,
