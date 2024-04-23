@@ -93,7 +93,7 @@ class AlgorithmProvider:
 
         # Iterate over list of records to build the scores matrix
         for i, sps in enumerate(list_of_sps):
-            jd_kw = jd_keywords[i][0].replace(" ", "_")
+            jd_kw = jd_keywords[i][0]
             fmt_output["detail"][jd_kw] = {
                 cv_id: {"overall": 0.0, "detail": {}} for cv_id in cv_ids}
 
@@ -101,7 +101,7 @@ class AlgorithmProvider:
             for q, sp in enumerate(sps):
                 cvw = sp.payload["payload"]["score"]
                 cv_id = sp.payload["payload"]["id"]
-                cv_kw = sp.payload["document"].replace(" ", "_")
+                cv_kw = sp.payload["document"]
                 # Get the index of the CV ID
                 try:
                     k = cv_ids.index(cv_id)
