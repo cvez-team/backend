@@ -6,7 +6,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from ..schemas.criteria_schema import CriteriaSchema
 from ..configs.llm_config import gpt_model, gemini_model
 from ..utils.utils import create_pydantic_object
-from ..utils.prompt import prompt_template
+from ..utils.prompt import prompt_template, native_contruct_template
 from ..utils.constants import DEFAULT_LLM_PROVIDER
 from ..utils.logger import log_llm
 
@@ -70,5 +70,18 @@ class LLMProvider:
 
         # Create the chain
         chain = template | model | parser
+
+        return LLMGenerator(chain=chain)
+
+    def native_contruct(self, provider: AnyStr = DEFAULT_LLM_PROVIDER):
+        template = PromptTemplate(
+            template=native_contruct_template,
+            input_variables=["system", "prompt"]
+        )
+
+        model = self.providers.get(
+            provider, self.providers[DEFAULT_LLM_PROVIDER])
+
+        chain = template | model
 
         return LLMGenerator(chain=chain)

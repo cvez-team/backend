@@ -42,6 +42,11 @@ def _validate_permission(project_id: AnyStr, position_id: AnyStr, user: UserSche
     return project, position
 
 
+def _update_detail_to_database(position: PositionSchema, fmt_output: FormattedOutput):
+    # Update match detail to position
+    position.update_match_detail(fmt_output)
+
+
 def _update_score_to_database(position: PositionSchema, scores: FormattedOutput):
     # Iterate over CVs
     for _id, score in scores.items():
@@ -93,6 +98,9 @@ def get_all_matches_cv(project_id: AnyStr, position_id: AnyStr, query_limit: int
 
     score_result = algorithm.apply_criterias(
         position.cvs, position.criterias, fmt_output)
+
+    # Save match detail to database
+    bg_task.add_task(_update_detail_to_database, position, fmt_output)
 
     # Save score results to database
     bg_task.add_task(_update_score_to_database, position, score_result)
