@@ -1,17 +1,27 @@
 from typing import List, Dict
 from fastapi import UploadFile, File
 from pydantic import BaseModel, Field
-from ..schemas.criteria_schema import CriteriaModel
+from ..schemas.cv_schema import CVModel
 
 
 class CVsResponseInterface(BaseModel):
     msg: str = Field(..., description="Message response")
-    data: list[CriteriaModel] = Field(..., description="List of CVs")
+    data: list[CVModel] = Field(..., description="List of CVs")
 
 
 class CVResponseInterface(BaseModel):
     msg: str = Field(..., description="Message response")
-    data: CriteriaModel = Field(None, description="CV data")
+    data: CVModel = Field(None, description="CV data")
+
+
+class CVSummaryResponseInterface(BaseModel):
+    msg: str = Field(..., description="Message response")
+    data: str = Field(..., description="CV summary")
+
+
+class CVDetailResponseInterface(BaseModel):
+    msg: str = Field(..., description="Message response")
+    data: Dict[str, Dict[str, float]] = Field(..., description="CV detail")
 
 
 class _CVUploadResponseInterface(BaseModel):
