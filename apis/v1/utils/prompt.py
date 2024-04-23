@@ -1,3 +1,13 @@
+native_contruct_template = '''Answer the query. Use the information provided in the query to answer the question.
+
+Query:
+{prompt}
+
+Questions:
+{system}
+'''
+
+
 prompt_template = '''Answer the query. Use the information provided in the query to answer the question.
 The query sometimes not contain directly a keywords, but you can use the information to answer the question.
 
@@ -45,4 +55,12 @@ Put these found keywords into the corresponding criteria mention in below instru
 The keyword must be strongly related to the criteria. Not mis-understanding between school degree and hard-skill requirements.
 
 Must respone promptly, accurately, and professionally. No yapping.
+'''
+
+system_prompt_summary = '''Let's think step by step.
+There are both CV (annotated by CV) and Job description (annotated by JD) in the query.
+Your task is summarizing about 10 lines about the content that provided in the query (Both CV and JD). It's ok if the CV and JD content is not related to each other.
+The summarization is focused on why the CV is suitable for the JD. If the CV is not suitable for the JD, you must mention it.
+You must provide the reason clearly, concisely, and easy to understand.
+You must respond promptly, accurately, and professionally.
 '''

@@ -19,6 +19,7 @@ class PositionModel(BaseModel):
     question_banks: list[str] = Field([], title="Question Banks")
     criterias: list[CriteriaModel] = Field([], title="Criterias")
     re_analyzing: bool = Field(False, title="Re-analyzing")
+    match_detail: dict = Field({}, title="Match Detail")
 
 
 class PositionMinimalModel(BaseModel):
@@ -49,6 +50,7 @@ class PositionSchema:
         question_banks: List[AnyStr] = [],
         criterias: List[CriteriaSchema] = [],
         re_analyzing: bool = False,
+        match_detail: Dict = {},
     ):
         self.id = position_id
         self.name = name
@@ -62,6 +64,7 @@ class PositionSchema:
         self.question_banks = question_banks
         self.criterias = criterias
         self.re_analyzing = re_analyzing
+        self.match_detail = match_detail
 
     def to_dict(self, include_id=True, minimal=False):
         data_dict = {
@@ -79,6 +82,7 @@ class PositionSchema:
             data_dict["criterias"] = [criteria.to_dict()
                                       for criteria in self.criterias]
             data_dict["re_analyzing"] = self.re_analyzing
+            data_dict["match_detail"] = self.match_detail
         if include_id:
             data_dict["id"] = self.id
         return data_dict
@@ -99,6 +103,7 @@ class PositionSchema:
             criterias=[CriteriaSchema.from_dict(
                 criteria) for criteria in data.get("criterias")],
             re_analyzing=data.get("re_analyzing"),
+            match_detail=data.get("match_detail")
         )
 
     @staticmethod
@@ -153,6 +158,16 @@ class PositionSchema:
         '''
         self.update_position({"jd": jd_id})
 
+    def update_question_bank(self, bank_id: AnyStr, is_add: bool = True):
+        '''
+        Update Question Bank in position.
+        '''
+        if is_add:
+            self.question_banks.append(bank_id)
+        else:
+            self.question_banks.remove(bank_id)
+        self.update_position({"question_banks": self.question_banks})
+
     def find_criteria_by_name(self, criteria_name: AnyStr):
         '''
         Find criteria by name.
@@ -167,3 +182,9 @@ class PositionSchema:
         Get total score of all criterias.
         '''
         return sum([criteria.score for criteria in self.criterias])
+
+    def update_match_detail(self, detail: Dict):
+        '''
+        Update match detail.
+        '''
+        self.update_position({"match_detail": detail})

@@ -8,9 +8,10 @@ from ..schemas.project_schema import ProjectSchema
 from ..schemas.position_schema import PositionSchema
 from ..schemas.embedding_schema import VectorEmbeddingSchema
 from ..schemas.criteria_schema import CriteriaSchema
+from ..schemas.jd_schema import JDSchema
 from ..providers import memory_cacher, storage_db, llm
 from ..utils.extractor import get_cv_content
-from ..utils.prompt import system_prompt_cv
+from ..utils.prompt import system_prompt_cv, system_prompt_summary
 from ..utils.utils import validate_file_extension, get_content_type
 
 
@@ -108,7 +109,7 @@ def _analyze_cv_data(content: AnyStr, watch_id: AnyStr, filename: AnyStr, cv: CV
     generator = llm.construct(position.criterias)
     extraction = generator.generate(system_prompt_cv, content)
     extraction = _validate_llm_extraction(extraction, position.criterias)
-    memory_cacher.get(watch_id)["percent"][filename] += 30
+    memory_cacher.get(watch_id)["percent"][filename] += 25
 
     # Update extraction
     cv.update_extraction(extraction)
@@ -166,6 +167,10 @@ def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: AnyStr
         cache_file_path = memory_cacher.save_cache_file(cv, filename)
         cv_content = get_cv_content(cache_file_path)
         memory_cacher.remove_cache_file(filename)
+        memory_cacher.get(watch_id)["percent"][filename] += 5
+
+        # Update content
+        cv_instance.update_content(cv_content)
         memory_cacher.get(watch_id)["percent"][filename] += 5
 
         # Analyze CV
@@ -289,6 +294,64 @@ async def download_cv_content(project_id: AnyStr, position_id: AnyStr, cv_id: An
         )
 
     return cv_content
+
+
+def get_cv_summary_control(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, user: UserSchema):
+    # Validate permission
+    _, position = _validate_permissions(project_id, position_id, user)
+
+    if cv_id not in position.cvs:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this CV."
+        )
+
+    # Get CV
+    cv = CVSchema.find_by_id(cv_id)
+    if not cv:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="CV not found."
+        )
+
+    # Get JD
+    jd = JDSchema.find_by_id(position.jd)
+    if not jd:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="JD not found."
+        )
+
+    # Create content to prompt
+    prompt_content = f"JD: {jd.content}\nCV: {cv.content}"
+
+    # Generate summary
+    generator = llm.native_contruct()
+    generated_content = generator.generate(
+        system_prompt_summary, prompt_content)
+
+    # Update summary to CV
+    cv.update_summary(generated_content.content)
+
+    return generated_content.content
+
+
+def get_cv_detail_control(project_id: AnyStr, position_id: AnyStr, cv_id: AnyStr, user: UserSchema):
+    # Validate permission
+    _, position = _validate_permissions(project_id, position_id, user)
+
+    # Get Match detail from position
+    match_detail = position.match_detail
+
+    # Format detail
+    fmt_detail = {}
+    for cri, cri_v in match_detail.items():
+        for jdw, jdw_v in cri_v["detail"].items():
+            if cv_id in jdw_v:
+                fmt_detail[f"{cri}:{jdw}"] = jdw_v[cv_id]["detail"]
+                fmt_detail[f"{cri}:{jdw}"]["overall"] = jdw_v[cv_id]["overall"]
+
+    return fmt_detail
 
 
 def delete_cvs_by_ids(cv_ids: list[AnyStr]):

@@ -12,7 +12,7 @@ class _QuestionAnswerModel(BaseModel):
 class QuestionModel(BaseModel):
     content: str = Field("", title="Question Content")
     answer: _QuestionAnswerModel = Field("", title="Question Answer")
-    level: int = Field(0, title="Question Level")
+    correct_answer: list[int] = Field([], title="Correct Answer")
 
 
 class QuestionSchema:
@@ -24,17 +24,17 @@ class QuestionSchema:
         self,
         content: AnyStr = "",
         answer: Dict[str, str] = {},
-        level: int = 0,
+        correct_answer: list[int] = [],
     ):
         self.content = content
         self.answer = answer
-        self.level = level
+        self.correct_answer = correct_answer
 
     def to_dict(self):
         return {
             "content": self.content,
             "answer": self.answer,
-            "level": self.level,
+            "correct_answer": self.correct_answer,
         }
 
     @staticmethod
@@ -42,5 +42,5 @@ class QuestionSchema:
         return QuestionSchema(
             content=data.get("content"),
             answer=data.get("answer"),
-            level=data.get("level"),
+            correct_answer=data.get("correct_answer"),
         )
