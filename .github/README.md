@@ -1,8 +1,20 @@
-# CV Matcher Backend
+# CVEZ Backend
 
-## 🚀 How to run
+Back-end for CVEZ CV Matcher Tool. Visit deployed product at [Vercel](cvez-fe.vercel.com).
 
-- Install Docker to your computer
+## 🤗 Contributors
+
+- Doan Quang Minh
+- Le Thi Minh Thu
+- Duong Thanh Duy
+- Diep Gia Dong
+- Nguyen Thanh Hoang
+
+## 🚀 How to run local
+
+Install Docker to your computer.
+
+⚠️ Provide `.env` file before run docker. Email for creator quangminh57dng@gmail.com to grant access.
 
 ```bash
 docker compose up

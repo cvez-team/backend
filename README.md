@@ -1,8 +1,8 @@
 ---
-title: Cvez
-emoji: 📈
-colorFrom: blue
-colorTo: indigo
+title: Cvez Server
+emoji: 😻
+colorFrom: pink
+colorTo: yellow
 sdk: docker
-pinned: false
+pinned: true
 ---

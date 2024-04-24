@@ -18,4 +18,4 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push -f https://MingDoan:$HF_TOKEN@huggingface.co/spaces/MingDoan/cvez main
+        run: git push -f https://cvez-team:$HF_TOKEN@huggingface.co/spaces/cvez-team/cvez-server main
