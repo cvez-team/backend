@@ -112,6 +112,7 @@ def create_new_project(data: Dict, user: UserSchema):
         alias=data.alias,
         description=data.description,
         owner=user.id,
+        positions=[]
     ).create_project()
 
     # Update user in database

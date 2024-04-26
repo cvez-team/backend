@@ -115,7 +115,10 @@ def create_new_position(project_id: AnyStr, data: BaseModel, user: UserSchema):
         start_date=data.start_date,
         end_date=data.end_date,
         criterias=[CriteriaSchema.from_dict(
-            criteria) for criteria in data.criterias]
+            criteria) for criteria in data.criterias],
+        cvs=[],
+        jd="",
+        question_banks=[]
     ).create_position()
 
     # Update position of project in database
