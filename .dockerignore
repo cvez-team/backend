@@ -2,4 +2,5 @@ env/
 keys/
 __pycache__/
 .github/
-
+.gitlab/
+terraform/
