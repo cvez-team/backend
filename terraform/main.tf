@@ -1,9 +1,8 @@
 # AWS Cloud provisioning
 
-
-# Networl module
+# Network module
 module "aws_vpc" {
-  source = "./vcp"
+  source = "./vpc"
   name   = "minhdq30"
 }
 

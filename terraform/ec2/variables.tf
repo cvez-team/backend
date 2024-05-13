@@ -34,7 +34,7 @@ variable "aws_availability_zone" {
 variable "private_ips" {
   description = "Private IPs of EC2"
   type        = list(string)
-  default     = ["172.16.10.100"]
+  default     = ["10.0.1.100"]
 }
 
 variable "volume_type" {

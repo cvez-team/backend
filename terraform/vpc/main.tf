@@ -2,7 +2,7 @@
 resource "aws_vpc" "cvez_main" {
   cidr_block = var.vpc_cidr
 
-  tags_all = {
+  tags = {
     created_by = "${var.name}"
   }
 }
@@ -23,7 +23,7 @@ resource "aws_subnet" "cvez_main" {
   availability_zone       = var.availability_zone
   map_public_ip_on_launch = true
 
-  tags_all = {
+  tags = {
     created_by = "${var.name}"
   }
 }
@@ -37,7 +37,7 @@ resource "aws_route_table" "cvez_main" {
     gateway_id = aws_internet_gateway.cvez_main.id
   }
 
-  tags_all = {
+  tags = {
     created_by = "${var.name}"
   }
 }
