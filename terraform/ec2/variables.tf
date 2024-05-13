@@ -48,3 +48,21 @@ variable "volume_size" {
   type        = number
   default     = 16
 }
+
+variable "sg_ingress_ports" {
+  description = "Ingress rule for Security Group"
+  type        = list(number)
+  default     = [80, 443, 22]
+}
+
+variable "sg_egress_ports" {
+  description = "Egress rule for Security Group"
+  type        = list(number)
+  default     = [80, 443]
+}
+
+variable "sg_allow_address" {
+  description = "Allow address of Security Group"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}

@@ -4,6 +4,7 @@ resource "aws_vpc" "cvez_main" {
 
   tags = {
     created_by = "${var.name}"
+    Name       = "cvez_main"
   }
 }
 
@@ -13,6 +14,7 @@ resource "aws_internet_gateway" "cvez_main" {
 
   tags = {
     created_by = "${var.name}"
+    Name       = "cvez_main"
   }
 }
 
@@ -25,6 +27,7 @@ resource "aws_subnet" "cvez_main" {
 
   tags = {
     created_by = "${var.name}"
+    Name       = "cvez_main"
   }
 }
 
@@ -39,6 +42,7 @@ resource "aws_route_table" "cvez_main" {
 
   tags = {
     created_by = "${var.name}"
+    Name       = "cvez_main"
   }
 }
 

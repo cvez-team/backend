@@ -1,6 +1,7 @@
 resource "aws_instance" "cvez_main" {
   ami           = var.ami
   instance_type = var.instance_type
+  user_data     = file("./ec2/initialize.sh")
 
   network_interface {
     network_interface_id = aws_network_interface.cvez_main.id
@@ -16,10 +17,12 @@ resource "aws_instance" "cvez_main" {
 
   volume_tags = {
     created_by = "${var.name}"
+    Name       = "cvez_main"
   }
 
   tags = {
     created_by = "${var.name}"
+    Name       = "cvez_main"
   }
 }
 
@@ -29,6 +32,7 @@ resource "aws_network_interface" "cvez_main" {
 
   tags = {
     created_by = "${var.name}"
+    Name       = "cvez_main"
   }
 }
 
@@ -37,7 +41,35 @@ resource "aws_security_group" "cvez_main" {
   name        = "cvez_main"
   description = "Allow traffics to the EC2 instance"
 
+  dynamic "ingress" {
+    iterator = port
+    for_each = var.sg_ingress_ports
+    content {
+      from_port   = port.value
+      to_port     = port.value
+      protocol    = "TCP"
+      cidr_blocks = var.sg_allow_address
+    }
+  }
+
+  dynamic "egress" {
+    iterator = port
+    for_each = var.sg_egress_ports
+    content {
+      from_port   = port.value
+      to_port     = port.value
+      protocol    = "TCP"
+      cidr_blocks = var.sg_allow_address
+    }
+  }
+
   tags = {
     created_by = "${var.name}"
+    Name       = "cvez_main"
   }
+}
+
+resource "aws_network_interface_sg_attachment" "cvez_main" {
+  security_group_id    = aws_security_group.cvez_main.id
+  network_interface_id = aws_instance.cvez_main.primary_network_interface_id
 }
