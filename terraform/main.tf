@@ -15,7 +15,8 @@ module "aws_ec2" {
 }
 
 module "aws_elastic_eip" {
-  source          = "./eip"
-  name            = "minhdq30"
-  ec2_instance_id = module.aws_ec2.ec2_instance_id
+  source                   = "./eip"
+  name                     = "minhdq30"
+  ec2_instance_id          = module.aws_ec2.ec2_instance_id
+  ec2_network_interface_id = module.aws_ec2.ec2_network_interface_id
 }

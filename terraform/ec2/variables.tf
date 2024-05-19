@@ -13,7 +13,12 @@ variable "ami" {
 variable "instance_type" {
   description = "Type of machine in EC2"
   type        = string
-  default     = "t2.micro" # Free-tier
+  default     = "t2.medium"
+}
+
+variable "access_key_name" {
+  type    = string
+  default = "minhdq30_cvez_main"
 }
 
 variable "aws_vpc_id" {

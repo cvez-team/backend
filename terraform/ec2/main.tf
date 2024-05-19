@@ -2,8 +2,10 @@ resource "aws_instance" "cvez_main" {
   ami           = var.ami
   instance_type = var.instance_type
   user_data     = file("./ec2/initialize.sh")
+  key_name      = var.access_key_name
 
   network_interface {
+
     network_interface_id = aws_network_interface.cvez_main.id
     device_index         = 0
   }
@@ -27,8 +29,9 @@ resource "aws_instance" "cvez_main" {
 }
 
 resource "aws_network_interface" "cvez_main" {
-  subnet_id   = var.aws_subnet_id
-  private_ips = var.private_ips
+  subnet_id       = var.aws_subnet_id
+  private_ips     = var.private_ips
+  security_groups = [aws_security_group.cvez_main.id]
 
   tags = {
     created_by = "${var.name}"
@@ -69,7 +72,7 @@ resource "aws_security_group" "cvez_main" {
   }
 }
 
-resource "aws_network_interface_sg_attachment" "cvez_main" {
-  security_group_id    = aws_security_group.cvez_main.id
-  network_interface_id = aws_instance.cvez_main.primary_network_interface_id
-}
+# resource "aws_network_interface_sg_attachment" "cvez_main" {
+#   security_group_id    = aws_security_group.cvez_main.id
+#   network_interface_id = aws_instance.cvez_main.primary_network_interface_id
+# }
