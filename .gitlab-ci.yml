@@ -12,7 +12,6 @@ before_script:
 
 build:
   tags:
-    - minhdq30_zephyrus
     - cvez_gitlab_runner
   stage: build
   script:
