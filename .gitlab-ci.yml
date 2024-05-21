@@ -12,7 +12,7 @@ before_script:
 
 build:
   tags:
-    - saas-linux-small-amd64
+    - minhdq30_zephyrus
   stage: build
   script:
     - docker pull $CI_REGISTRY_IMAGE:latest || true
