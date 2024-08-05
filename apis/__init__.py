@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+# Import routes from the v1 folder
 from .v1.routes.auth import router as auth_router
 from .v1.routes.user import router as user_router
 from .v1.routes.project import router as project_router
@@ -9,9 +10,9 @@ from .v1.routes.question_bank import router as question_bank_router
 from .v1.routes.match import router as matching_router
 from .v1.routes.utils import router as utils_router
 
+# Register routes for the v1 API
 api_v1_router = APIRouter(prefix="/v1")
 
-# Register routes for the API
 api_v1_router.include_router(auth_router)
 api_v1_router.include_router(user_router)
 api_v1_router.include_router(project_router)

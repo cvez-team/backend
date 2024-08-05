@@ -3,6 +3,7 @@ import firebase_admin as admin
 from firebase_admin import firestore
 from firebase_admin import storage
 
+
 # Initialize credentials
 cred_dict = {
     "type": "service_account",

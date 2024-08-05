@@ -1,19 +1,18 @@
 import os
 import uvicorn
-from apis import api_v1_router
 from apis.create_app import create_app
-from dotenv import load_dotenv, find_dotenv
+from apis import api_v1_router
 
-# Load environment variables from the `.env` file
-load_dotenv(find_dotenv())
 # Create FastAPI app instance
 app = create_app()
 
-
-# Add routes
+# Add routes to the app
 app.include_router(api_v1_router, prefix="/api")
 
-
-# Launch FastAPI app
+# Launch FastAPI app by `python main.py`
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=os.environ.get("PORT", 7860))
+    # Load dotenv file in Development option
+    from dotenv import load_dotenv, find_dotenv
+    load_dotenv(find_dotenv(raise_error_if_not_found=True))
+    # Run app in Development option
+    uvicorn.run(app, host="127.0.0.1", port=os.environ.get("PORT", 7860))
