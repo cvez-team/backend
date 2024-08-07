@@ -125,13 +125,14 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# Exception
-!.gitkeep
-
 # Custom files, folders
 keys/
 cache/*
 __cache__.json
+data/*/*
+
+# Exception
+!.gitkeep
 
 # Local .terraform directories
 **/.terraform/*
