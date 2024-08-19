@@ -80,10 +80,10 @@ python main.py
    - Git Convension
    - Version
    - Module Roles
-3. Database
+3. [Database](/docs/Development/3.%20Database.md)
+   - Cache Database
    - Document Database
    - Vector Database
-   - Cache Database
 4. Algorithm
    - Testing System
    - Testing Dataset

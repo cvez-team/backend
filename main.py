@@ -1,5 +1,6 @@
 import os
 import uvicorn
+from uvicorn.logging import DefaultFormatter
 from apis.create_app import create_app
 from apis import api_v1_router
 
@@ -15,4 +16,5 @@ if __name__ == "__main__":
     from dotenv import load_dotenv, find_dotenv
     load_dotenv(find_dotenv(raise_error_if_not_found=True))
     # Run app in Development option
-    uvicorn.run(app, host="127.0.0.1", port=os.environ.get("PORT", 7860))
+    uvicorn.run(app, host="127.0.0.1", port=int(
+        os.environ.get("PORT", 7860)), log_level="debug")

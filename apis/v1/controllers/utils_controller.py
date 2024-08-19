@@ -6,7 +6,7 @@ def clear_cache_control():
     '''
     Clear cache.
     '''
-    cacher.reset_cache()
+    cacher.clear()
 
 
 def extract_content_control(filedata: bytes, filename: str):

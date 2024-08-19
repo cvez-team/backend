@@ -1,5 +1,5 @@
-from ._cache_init import cacher
-from .cache_provider import CacheProvider
+from .cache_provider import cacher
+from .memory_provider import MemoryProvider
 from .jwt_provider import JWTProvider
 from .db_provider import DatabaseProvider
 from .word_embedding_provider import WordEmbeddingProvider
@@ -17,8 +17,8 @@ from .storage_provider import StorageProvider
 from .llm_provider import LLMProvider
 from .algorithm_provider import AlgorithmProvider
 
-
-memory_cacher = CacheProvider(in_memory=True)
+# Define Providers
+memory_cacher = MemoryProvider()
 jwt = JWTProvider()
 user_db = DatabaseProvider(collection_name=USER_COLLECTION)
 project_db = DatabaseProvider(collection_name=PROJECT_COLLECTION)

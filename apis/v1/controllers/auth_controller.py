@@ -1,8 +1,9 @@
-from typing import AnyStr, List
+from typing import AnyStr
+import datetime
 import requests
 from fastapi import HTTPException
 from ..schemas.user_schema import UserSchema
-from ..providers import cacher, jwt
+from ..providers import jwt
 from ..utils.constants import GOOGLE_VERIFY_URL
 
 
@@ -36,29 +37,16 @@ def login_control(access_token: AnyStr):
             avatar=google_data["picture"]
         ).create_user()
 
-    # Activate the user in cache
-    active_users = cacher.get("active_users")
-    if not active_users:
-        active_users = []
-
-    if user.id not in active_users:
-        active_users.append(user.id)
-        cacher.set("active_users", active_users)
-
     # Create JWT Token
     token = jwt.encrypt({
         "id": user.id,
+        "exp": datetime.datetime.now(
+            tz=datetime.timezone.utc) + datetime.timedelta(days=30)
     })
 
     return token
 
 
 def logout_control(user: UserSchema):
-    # Get active users from cache
-    active_users: List | None = cacher.get("active_users")
-    if not active_users:
-        return
-    if user.id in active_users:
-        active_users.remove(user.id)
-        cacher.set("active_users", active_users)
+    # Futher clean up
     return
