@@ -43,7 +43,7 @@ class BaseCacheProvider:
         raise NotImplementedError
 
     @abstractmethod
-    def deletes(self) -> None:
+    def deletes(self, keys: list[str]) -> None:
         """
         Delete values from cache.
         """

@@ -4,7 +4,7 @@ import importlib
 from .base_provider import BaseCacheProvider
 
 # Define Database Provider alias
-provider_name = os.environ.get('DB_PROVIDER', 'redis')
+provider_name = os.environ.get('CACHE_PROVIDER', 'redis')
 provider_module = importlib.import_module(
     f'.{provider_name}_provider', __package__)
 CacheProvider: Type[BaseCacheProvider] = getattr(

@@ -8,6 +8,9 @@ logger = logging.getLogger("uvicorn.info")
 
 
 def prefix_color_map(prefix: str):
+    """
+    Map the prefix to a color
+    """
     _mapped_color = {
         "DATABASE": Fore.YELLOW,
         "VECTOR_DATABASE": Fore.RED,
