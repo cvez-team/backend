@@ -1,7 +1,7 @@
 import uuid
 import time
 from ..configs.firebase_config import bucket
-from ..utils.logger import log_firebase
+from ..utils.logger import log_database
 
 
 class StorageProvider:
@@ -32,7 +32,7 @@ class StorageProvider:
         blob = bucket.blob(path)
         _e = time.perf_counter() - _s
 
-        log_firebase(f"Storage upload to {path} [{_e:.2f}s]")
+        log_database(f"Storage upload to {path} [{_e:.2f}s]")
 
         blob.upload_from_string(file, content_type)
         blob.make_public()
@@ -48,7 +48,7 @@ class StorageProvider:
         data = blob.download_as_bytes()
         _e = time.perf_counter() - _s
 
-        log_firebase(f"Storage download from {path} [{_e:.2f}s]")
+        log_database(f"Storage download from {path} [{_e:.2f}s]")
 
         return data
 
@@ -62,4 +62,4 @@ class StorageProvider:
         blob.delete()
         _e = time.perf_counter() - _s
 
-        log_firebase(f"Storage delete from {path} [{_e:.2f}s]")
+        log_database(f"Storage delete from {path} [{_e:.2f}s]")

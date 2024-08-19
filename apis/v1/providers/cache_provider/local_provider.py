@@ -2,7 +2,6 @@ from typing import Any, AnyStr, ByteString
 import os
 import json
 from threading import Timer
-from ..utils.logger import log_cache
 
 
 class CacheProvider:
