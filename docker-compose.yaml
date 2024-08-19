@@ -2,15 +2,25 @@
 version: "3.8"
 
 services:
+  # Redis Cache service
+  redis:
+    container_name: "cvez-cache-db"
+    image: "redis/redis-stack-server:latest"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis_storage:/data
+  # App service
   app:
     build: .
-    container_name: "cvez-container"
-    image: "cvez-be"
+    container_name: "cvez-service"
+    image: "cvez-service:latest"
     ports:
       - "7860:7860"
     volumes:
       - .:/home/user/app
-      - /home/user/app/env
-      - /home/user/cache
     env_file:
       - .env
+    depends_on:
+      redis:
+        condition: service_started

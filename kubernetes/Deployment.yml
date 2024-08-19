@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cvez-deployment
+  labels:
+    app: cvez
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cvez
+    template:
+      metadata:
+        labels:
+          app: cvez
+      spec:
+        containers:
+          - name: cvez-service
+            image: cvez/cvez-service:latest
+            ports:
+              - containerPort: 7860
+          - name: redis
+            image: redis/redis-stack-server:latest
+            ports:
+              - containerPort: 6379
