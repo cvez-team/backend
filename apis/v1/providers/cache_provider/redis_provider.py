@@ -27,10 +27,11 @@ class RedisCacheProvider(BaseCacheProvider):
 
     @override
     def sets(self, data: dict, ttl: int = None):
-        cache_db.mset(data)
-        if ttl or self.expiration:
-            for key in data.keys():
-                cache_db.expire(key, ttl or self.expiration)
+        pipe = cache_db.pipeline()
+        for key, value in data.items():
+            str_value = orjson.dumps(value).decode("utf-8")
+            pipe.set(key, str_value, ex=ttl or self.expiration)
+        pipe.execute()
 
     @override
     def delete(self, key):

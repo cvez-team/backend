@@ -1,4 +1,5 @@
 from typing import AnyStr, List
+import os
 import time
 from fastapi import HTTPException, status
 from langchain.prompts import PromptTemplate
@@ -7,8 +8,11 @@ from ..schemas.criteria_schema import CriteriaSchema
 from ..configs.llm_config import gpt_model, gemini_model
 from ..utils.utils import create_pydantic_object
 from ..utils.prompt import prompt_template, native_contruct_template
-from ..utils.constants import DEFAULT_LLM_PROVIDER
-from ..utils.logger import log_llm
+from ..utils.logger import logger, log_llm
+
+
+DEFAULT_LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "gemini")
+logger.info(f"Using `{DEFAULT_LLM_PROVIDER}` as LLM provider.")
 
 
 class LLMGenerator:

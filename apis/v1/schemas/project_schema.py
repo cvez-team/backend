@@ -1,7 +1,7 @@
 from typing import Dict, AnyStr, List
 from pydantic import BaseModel, Field
 from ..schemas.user_schema import UserSchema, UserMinimalModel
-from ..providers import project_db
+from ..providers import project_db, cacher
 from ..utils.utils import get_current_time
 
 
@@ -98,7 +98,7 @@ class ProjectSchema:
         project_id = project_db.create(self.to_dict(include_id=False))
         self.id = project_id
         # Add data to cache
-        project_db.cacher.set(
+        cacher.set(
             f"{project_db.collection_name}:{project_id}", self.to_dict(include_id=True))
         return self
 

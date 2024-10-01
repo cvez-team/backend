@@ -2,7 +2,7 @@ from typing import AnyStr, List, Dict
 from pydantic import BaseModel, Field
 from .jd_schema import JDModel, JDSchema
 from .criteria_schema import CriteriaSchema, CriteriaModel
-from ..providers import position_db
+from ..providers import position_db, cacher
 from ..utils.utils import get_current_time
 
 
@@ -126,7 +126,7 @@ class PositionSchema:
         position_id = position_db.create(self.to_dict(include_id=False))
         self.id = position_id
         # Add data to cache
-        position_db.cacher.set(
+        cacher.set(
             f"{position_db.collection_name}:{position_id}", self.to_dict(include_id=True))
         return self
 

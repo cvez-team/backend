@@ -110,7 +110,8 @@ class AlgorithmProvider:
                 # Calculate the score for the record
                 _score = self._calculate_single_score(sp.score, cvw, jdw)
                 scores[i, q, k] = _score
-                fmt_output["detail"][jd_kw][cv_id]["detail"][cv_kw] = _score
+                fmt_output["detail"][jd_kw][cv_id]["detail"][cv_kw] = float(
+                    _score)
 
         # Sum the scores and apply the hyperbolic tangent function
         tanh_scores = self._calculate_sum_and_tanh(scores)
@@ -118,7 +119,8 @@ class AlgorithmProvider:
         # Assign overall scores of each CV ID to formatted output
         for i, (jd_kw, _) in enumerate(jd_keywords):
             for j, cv_id in enumerate(cv_ids):
-                fmt_output["detail"][jd_kw][cv_id]["overall"] = tanh_scores[i, j]
+                fmt_output["detail"][jd_kw][cv_id]["overall"] = float(
+                    tanh_scores[i, j])
 
         # Calculate percent contribution of each JD keyword
         p = 100 / sum([x[1] for x in jd_keywords])
@@ -128,7 +130,7 @@ class AlgorithmProvider:
         overall_score = np.sum(tanh_scores.T * jdws, axis=1)
 
         for i, cv_id in enumerate(cv_ids):
-            fmt_output["overall"][cv_id] = overall_score[i]
+            fmt_output["overall"][cv_id] = float(overall_score[i])
 
         return fmt_output
 

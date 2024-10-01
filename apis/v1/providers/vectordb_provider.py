@@ -1,5 +1,4 @@
 from typing import AnyStr, Dict, Any, List, Union
-import time
 import numpy.typing as npt
 from fastapi import HTTPException, status
 from qdrant_client.http.models import (
@@ -15,7 +14,7 @@ from qdrant_client.http.models import (
 )
 from ..configs.qdrant_config import client
 from ..utils.constants import DEFAULT_EMBEDDING_DIM, DEFAULT_EMBEDDING_PROVIDER, DEFAULT_QUERY_LIMIT
-from ..utils.logger import log_qdrant
+from ..utils.logger import logger_decorator
 
 
 class VectorDatabaseProvider:
@@ -25,6 +24,7 @@ class VectorDatabaseProvider:
 
     def __init__(self): ...
 
+    @logger_decorator(prefix="VECTOR_DATABASE")
     def create_collection(
         self,
         collection_name: AnyStr,
@@ -40,7 +40,6 @@ class VectorDatabaseProvider:
             collection.name for collection in client.get_collections().collections]
 
         if collection_name not in collections_name:
-            _s = time.perf_counter()
             is_success = client.create_collection(
                 collection_name=collection_name,
                 vectors_config={
@@ -50,7 +49,6 @@ class VectorDatabaseProvider:
                     )
                 }
             )
-            _e = time.perf_counter() - _s
 
             if not is_success:
                 raise HTTPException(
@@ -58,17 +56,12 @@ class VectorDatabaseProvider:
                     detail=f"Failed to create collection: {collection_name}"
                 )
 
-            log_qdrant(f"Collection {collection_name} created. [{_e:.2f}s]")
-
+    @logger_decorator(prefix="VECTOR_DATABASE")
     def delete_collection(self, collection_name: AnyStr):
         '''
         Delete the collection.
         '''
-        _s = time.perf_counter()
         is_success = client.delete_collection(collection_name=collection_name)
-        _e = time.perf_counter() - _s
-
-        log_qdrant(f"Collection {collection_name} deleted. [{_e:.2f}s]")
 
         if not is_success:
             raise HTTPException(
@@ -76,6 +69,7 @@ class VectorDatabaseProvider:
                 detail=f"Failed to delete collection: {collection_name}"
             )
 
+    @logger_decorator(prefix="VECTOR_DATABASE")
     def get_all(
         self,
         collection_name: AnyStr,
@@ -96,7 +90,6 @@ class VectorDatabaseProvider:
             ]
         )
         # Search
-        _s = time.perf_counter()
         searches = client.scroll(
             collection_name=collection_name,
             scroll_filter=space_filter,
@@ -104,12 +97,10 @@ class VectorDatabaseProvider:
             with_vectors=True,
             limit=999
         )[0]
-        _e = time.perf_counter() - _s
-
-        log_qdrant(f"Collection {collection_name} read. [{_e:.2f}s]")
 
         return searches
 
+    @logger_decorator(prefix="VECTOR_DATABASE")
     def search(
         self,
         collection_name: AnyStr,
@@ -149,17 +140,14 @@ class VectorDatabaseProvider:
                 )
             )
         # Search
-        _s = time.perf_counter()
         seaches = client.search_batch(
             collection_name=collection_name,
             requests=queries
         )
-        _e = time.perf_counter() - _s
-
-        log_qdrant(f"Collection {collection_name} searched. [{_e:.2f}s]")
 
         return seaches
 
+    @logger_decorator(prefix="VECTOR_DATABASE")
     def insert(
         self,
         collection_name: AnyStr,
@@ -192,15 +180,12 @@ class VectorDatabaseProvider:
         if len(vector_points) == 0:
             return
 
-        _s = time.perf_counter()
         client.upsert(
             collection_name=collection_name,
             points=vector_points
         )
-        _e = time.perf_counter() - _s
 
-        log_qdrant(f"Collection {collection_name} inserted. [{_e:.2f}s]")
-
+    @logger_decorator(prefix="VECTOR_DATABASE")
     def delete(
         self,
         collection_name: AnyStr,
@@ -214,17 +199,14 @@ class VectorDatabaseProvider:
         else:
             point_ids = [ids]
 
-        _s = time.perf_counter()
         client.delete(
             collection_name=collection_name,
             points_selector=PointIdsList(
                 points=point_ids
             )
         )
-        _e = time.perf_counter() - _s
 
-        log_qdrant(f"Collection {collection_name} deleted. [{_e:.2f}s]")
-
+    @logger_decorator(prefix="VECTOR_DATABASE")
     def dynamic_search(self, collection_name: AnyStr, key: AnyStr, value: AnyStr, space: AnyStr = None):
         '''
         Dynamic search by key and value.
@@ -248,7 +230,6 @@ class VectorDatabaseProvider:
                 )
             )
 
-        _s = time.perf_counter()
         searches = client.scroll(
             collection_name=collection_name,
             scroll_filter=Filter(
@@ -258,9 +239,5 @@ class VectorDatabaseProvider:
             with_vectors=True,
             limit=999
         )[0]
-        _e = time.perf_counter() - _s
-
-        log_qdrant(
-            f"Collection {collection_name} dynamic searched. [{_e:.2f}s]")
 
         return searches

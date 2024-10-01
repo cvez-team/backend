@@ -145,7 +145,7 @@ def _analyze_cv_data(content: AnyStr, watch_id: AnyStr, filename: AnyStr, cv: CV
         )
 
 
-def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: AnyStr, position: PositionSchema):
+def _upload_multiple_cv(cvs: list[bytes], filenames: list[AnyStr], watch_id: AnyStr, position: PositionSchema):
     for cv, filename in zip(cvs, filenames):
         memory_cacher.get(watch_id)["percent"][filename] = 0
 
@@ -192,6 +192,51 @@ def _upload_cvs_data(cvs: list[bytes], filenames: list[AnyStr], watch_id: AnyStr
     memory_cacher.remove(watch_id)
 
 
+def _upload_single_cv(cv: bytes, filename: AnyStr, watch_id: AnyStr, position: PositionSchema):
+    memory_cacher.get(watch_id)["percent"][filename] = 0
+
+    # Create CV document in database
+    cv_instance = CVSchema(
+        name=filename,
+    ).create_cv()
+    memory_cacher.get(watch_id)["percent"][filename] += 10
+
+    # Upload to storage
+    try:
+        _upload_cv_data(
+            cv, filename, watch_id, cv_instance)
+    except Exception as e:
+        memory_cacher.get(watch_id)["error"][filename] = str(e)
+        return
+
+    # Save file to cache folder
+    cache_file_path = memory_cacher.save_cache_file(cv, filename)
+    cv_content = get_cv_content(cache_file_path)
+    memory_cacher.remove_cache_file(filename)
+    memory_cacher.get(watch_id)["percent"][filename] += 5
+
+    # Update content
+    cv_instance.update_content(cv_content)
+    memory_cacher.get(watch_id)["percent"][filename] += 5
+
+    # Analyze CV
+    try:
+        _analyze_cv_data(cv_content, watch_id, filename, cv_instance, position)
+    except Exception as e:
+        memory_cacher.get(watch_id)["error"][filename] = str(e)
+        return
+
+    # Update to position
+    position.update_cv(cv_instance.id, is_add=True)
+    memory_cacher.get(watch_id)["percent"][filename] += 5
+
+    # Wait for 10 second to remove watch id
+    time.sleep(10)
+
+    # Delete cache file
+    memory_cacher.remove(watch_id)
+
+
 async def upload_cvs_data(project_id: AnyStr, position_id: AnyStr, user: UserSchema, cvs: list[UploadFile], bg_tasks: BackgroundTasks):
     # Validate permission
     _, position = _validate_permissions(project_id, position_id, user)
@@ -221,7 +266,7 @@ async def upload_cvs_data(project_id: AnyStr, position_id: AnyStr, user: UserSch
     })
 
     # Upload CVs
-    bg_tasks.add_task(_upload_cvs_data, files, filenames, watch_id, position)
+    bg_tasks.add_task(_upload_multiple_cv, files, filenames, watch_id, position)
 
     return watch_id
 
@@ -264,8 +309,8 @@ async def upload_cv_data(position_id: AnyStr, cv: UploadFile, bg_tasks: Backgrou
     })
 
     # Upload CV
-    bg_tasks.add_task(_upload_cv_data, [file_content], [
-                      cv.filename], watch_id, position)
+    bg_tasks.add_task(_upload_single_cv, file_content,
+                      cv.filename, watch_id, position)
 
     return watch_id
 

@@ -4,12 +4,22 @@ version: "3.8"
 services:
   # Redis Cache service
   redis:
-    container_name: "cvez-cache-db"
+    container_name: cvez-cache-db
     image: "redis/redis-stack-server:latest"
     ports:
       - "6379:6379"
     volumes:
-      - ./data/redis_storage:/data
+      - cvez_redis_storage:/data
+
+  # MongoDB service
+  mongodb:
+    container_name: cvez-db
+    image: mongodb/mongodb-community-server:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - cvez_mongo_storage:/data/db
+
   # App service
   app:
     build: .
@@ -21,6 +31,28 @@ services:
       - .:/home/user/app
     env_file:
       - .env
+    environment:
+      - REDIS_HOST=redis
+      - MONGO_HOST=mongodb
+    develop:
+      watch:
+        - path: .
+          action: sync
+          target: /home/user/app
+          ignore:
+            - .git
+            - env
+            - .env
+            - terraform
+            - kubernetes
     depends_on:
       redis:
         condition: service_started
+      mongodb:
+        condition: service_started
+
+volumes:
+  cvez_redis_storage:
+    driver: local
+  cvez_mongo_storage:
+    driver: local

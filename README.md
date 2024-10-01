@@ -41,7 +41,10 @@ docker run --rm -d --name qdrant -p 6333:6333 -p 6334:6334 -v $pwd/data/qdrant_s
 - Run MongoDB locally. [Detail](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/)
 
 ```sh
-docker run --rm -d --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest
+# Create Docker volume
+docker volume create mongodbdata
+# Start Mongodb container
+docker run --rm -d --name mongodb -p 27017:27017 -v mongodbdata:/data/db mongodb/mongodb-community-server:latest
 ```
 
 - Create Virtual environment (Optional)
